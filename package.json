@@ -1,0 +1,30 @@
+{
+  "name": "elevenlabs-voice-agent-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for ElevenLabs Voice Agent Development",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "elevenlabs-voice-agent-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "axios": "^1.7.9",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
