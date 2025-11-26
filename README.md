@@ -139,8 +139,10 @@ elevenlabs_start_outbound_call({
   agent_phone_number_id: "pn_abc123",
   to_number: "+19175551234",
   conversation_initiation_client_data: {
-    customer_name: "John Smith",
-    account_balance: 1500
+    dynamic_variables: {
+      customer_name: "John Smith",
+      account_balance: 1500
+    }
   }
 })
 ```
@@ -156,15 +158,19 @@ elevenlabs_submit_batch_call({
     {
       phone_number: "+14155551234",
       conversation_initiation_client_data: {
-        name: "Alice Johnson",
-        account_id: "A123"
+        dynamic_variables: {
+          name: "Alice Johnson",
+          account_id: "A123"
+        }
       }
     },
     {
       phone_number: "+19175555678",
       conversation_initiation_client_data: {
-        name: "Bob Williams",
-        account_id: "B456"
+        dynamic_variables: {
+          name: "Bob Williams",
+          account_id: "B456"
+        }
       }
     }
   ]
@@ -458,9 +464,11 @@ elevenlabs_start_outbound_call({
   agent_phone_number_id: "pn_main",
   to_number: "+14155551234",
   conversation_initiation_client_data: {
-    patient_name: "Sarah",
-    appointment_time: "3:00 PM tomorrow",
-    doctor_name: "Dr. Smith"
+    dynamic_variables: {
+      patient_name: "Sarah",
+      appointment_time: "3:00 PM tomorrow",
+      doctor_name: "Dr. Smith"
+    }
   }
 })
 ```
@@ -474,9 +482,11 @@ elevenlabs_submit_batch_call({
   recipients: recentCustomers.map(c => ({
     phone_number: c.phone,
     conversation_initiation_client_data: {
-      name: c.name,
-      product: c.lastPurchase,
-      order_id: c.orderId
+      dynamic_variables: {
+        name: c.name,
+        product: c.lastPurchase,
+        order_id: c.orderId
+      }
     }
   }))
 })

@@ -35,7 +35,7 @@ export const OutboundCallRecipientSchema = z.object({
 
   conversation_initiation_client_data: z.record(z.any())
     .optional()
-    .describe("Dynamic variables for this recipient (e.g., {name: 'John', account_id: '123'})")
+    .describe("Personalization data for this recipient (e.g., {dynamic_variables: {name: 'John', account_id: '123'}})")
 }).refine(
   (data) => data.phone_number || data.whatsapp_user_id,
   {

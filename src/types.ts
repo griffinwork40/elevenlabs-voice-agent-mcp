@@ -173,6 +173,21 @@ export interface OutboundCallRequest {
   agent_id: string;
   agent_phone_number_id: string;
   to_number: string;
+  /**
+   * Conversation initiation data for personalization
+   * @example
+   * {
+   *   dynamic_variables: {
+   *     customer_name: "John Smith",
+   *     account_id: "12345"
+   *   },
+   *   conversation_config_override: {
+   *     agent: {
+   *       first_message: "Custom greeting"
+   *     }
+   *   }
+   * }
+   */
   conversation_initiation_client_data?: Record<string, unknown> | null;
 }
 
@@ -192,6 +207,16 @@ export interface OutboundCallRecipient {
   id?: string;
   phone_number?: string;
   whatsapp_user_id?: string;
+  /**
+   * Conversation initiation data for personalization
+   * @example
+   * {
+   *   dynamic_variables: {
+   *     name: "Alice Johnson",
+   *     account_id: "A123"
+   *   }
+   * }
+   */
   conversation_initiation_client_data?: Record<string, unknown>;
 }
 
@@ -226,6 +251,16 @@ export interface BatchCallRecipient {
   conversation_id: string;
   created_at_unix: number;
   updated_at_unix: number;
+  /**
+   * Conversation initiation data for personalization
+   * @example
+   * {
+   *   dynamic_variables: {
+   *     name: "Bob Wilson",
+   *     appointment_time: "3pm"
+   *   }
+   * }
+   */
   conversation_initiation_client_data?: Record<string, unknown>;
 }
 
