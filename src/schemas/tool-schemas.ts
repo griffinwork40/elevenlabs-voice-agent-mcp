@@ -29,7 +29,7 @@ const ToolParameterSchema = z.object({
   enum: z.array(z.string())
     .optional()
     .describe("Optional array of allowed values for this parameter")
-}).strict();
+}).passthrough();
 
 /**
  * Schema for creating a webhook tool
@@ -66,7 +66,7 @@ export const CreateWebhookToolSchema = z.object({
     .describe("Array of parameters the tool accepts"),
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for listing tools
@@ -74,7 +74,7 @@ export const CreateWebhookToolSchema = z.object({
 export const ListToolsSchema = z.object({
   agent_id: AgentIdSchema,
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for deleting a tool
@@ -85,7 +85,7 @@ export const DeleteToolSchema = z.object({
   tool_name: z.string()
     .min(1, "Tool name is required")
     .describe("Name of the tool to delete")
-}).strict();
+}).passthrough();
 
 /**
  * Knowledge base document schema
@@ -102,7 +102,7 @@ const KnowledgeBaseDocumentSchema = z.object({
   metadata: z.record(z.string(), z.string())
     .optional()
     .describe("Optional metadata about the document")
-}).strict();
+}).passthrough();
 
 /**
  * Schema for adding knowledge base documents
@@ -116,7 +116,7 @@ export const AddKnowledgeBaseSchema = z.object({
     .describe("Array of documents to add to the agent's knowledge base"),
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for generating widget code
@@ -132,7 +132,7 @@ export const GenerateWidgetCodeSchema = z.object({
   avatar_url: URLSchema
     .optional()
     .describe("Optional avatar image URL for the widget")
-}).strict();
+}).passthrough();
 
 /**
  * Schema for listing voices
@@ -158,4 +158,4 @@ export const ListVoicesSchema = z.object({
     .describe("Maximum number of voices to return"),
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();

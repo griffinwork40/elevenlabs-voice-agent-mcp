@@ -20,7 +20,7 @@ import {
 export const GetConversationSchema = z.object({
   conversation_id: ConversationIdSchema,
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for listing conversations
@@ -41,4 +41,4 @@ export const ListConversationsSchema = z.object({
   offset: OffsetSchema,
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();

@@ -70,7 +70,7 @@ export const SubmitBatchCallSchema = z.object({
     .describe("Phone number to use as caller ID (optional)"),
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for listing batch calls
@@ -84,7 +84,7 @@ export const ListBatchCallsSchema = z.object({
     .describe("Pagination cursor from previous response"),
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for getting batch call details
@@ -93,4 +93,4 @@ export const GetBatchCallSchema = z.object({
   batch_id: BatchIdSchema,
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();

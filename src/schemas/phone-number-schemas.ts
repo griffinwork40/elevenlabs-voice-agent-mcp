@@ -54,7 +54,7 @@ export const RegionConfigSchema = z.object({
  */
 export const ListPhoneNumbersSchema = z.object({
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for getting a phone number
@@ -63,7 +63,7 @@ export const GetPhoneNumberSchema = z.object({
   phone_number_id: PhoneNumberIdSchema,
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for importing a Twilio phone number
@@ -101,7 +101,7 @@ export const ImportPhoneNumberSchema = z.object({
     .describe("Optional regional configuration for Twilio"),
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for updating a phone number
@@ -130,11 +130,11 @@ export const UpdatePhoneNumberSchema = z.object({
     .describe("LiveKit stack configuration"),
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for deleting a phone number
  */
 export const DeletePhoneNumberSchema = z.object({
   phone_number_id: PhoneNumberIdSchema
-}).strict();
+}).passthrough();

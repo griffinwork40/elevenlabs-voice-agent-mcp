@@ -42,14 +42,7 @@ Error Handling:
   - Returns "Error: Conversation not found" if conversation_id doesn't exist
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      conversation_id: { type: "string" },
-      response_format: { type: "string" }
-    },
-    required: ["conversation_id"]
-  },
+  zodSchema: GetConversationSchema,
 
   annotations: {
     readOnlyHint: true,
@@ -110,23 +103,7 @@ Error Handling:
   - Returns empty list if no conversations match filters
   - Returns "Error: Invalid date format" if date_range is malformed`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      agent_id: { type: "string" },
-      status: { type: "string" },
-      date_range: {
-        type: "object",
-        properties: {
-          start: { type: "string" },
-          end: { type: "string" }
-        }
-      },
-      limit: { type: "number" },
-      offset: { type: "number" },
-      response_format: { type: "string" }
-    }
-  },
+  zodSchema: ListConversationsSchema,
 
   annotations: {
     readOnlyHint: true,

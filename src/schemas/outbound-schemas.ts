@@ -67,4 +67,4 @@ export const StartOutboundCallSchema = z.object({
     .describe("Dynamic variables for personalization (e.g., {name: 'John', user_id: '123'})"),
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
