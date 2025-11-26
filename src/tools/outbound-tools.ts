@@ -56,17 +56,7 @@ Error Handling:
   - Returns "Error: Agent not found" if agent_id doesn't exist
   - Returns "Error: Invalid phone number format" if to_number is malformed`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      agent_id: { type: "string" },
-      agent_phone_number_id: { type: "string" },
-      to_number: { type: "string" },
-      conversation_initiation_client_data: { type: "object" },
-      response_format: { type: "string" }
-    },
-    required: ["agent_id", "agent_phone_number_id", "to_number"]
-  },
+  zodSchema: StartOutboundCallSchema,
 
   annotations: {
     readOnlyHint: false,

@@ -39,15 +39,7 @@ Error Handling:
   - Returns "Error: Agent not found" if agent_id doesn't exist
   - Returns "Error: Invalid color format" if color is not valid hex`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      agent_id: { type: "string" },
-      color: { type: "string" },
-      avatar_url: { type: "string" }
-    },
-    required: ["agent_id"]
-  },
+  zodSchema: GenerateWidgetCodeSchema,
 
   annotations: {
     readOnlyHint: true,
@@ -113,16 +105,7 @@ Error Handling:
   - Returns empty list if no voices match filters
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      language: { type: "string" },
-      gender: { type: "string" },
-      age: { type: "string" },
-      limit: { type: "number" },
-      response_format: { type: "string" }
-    }
-  },
+  zodSchema: ListVoicesSchema,
 
   annotations: {
     readOnlyHint: true,

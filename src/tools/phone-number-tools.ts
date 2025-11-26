@@ -48,12 +48,7 @@ Error Handling:
   - Returns empty array if no phone numbers exist
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      response_format: { type: "string" }
-    }
-  },
+  zodSchema: ListPhoneNumbersSchema,
 
   annotations: {
     readOnlyHint: true,
@@ -104,14 +99,7 @@ Error Handling:
   - Returns "Error: Phone number not found" if phone_number_id doesn't exist
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      phone_number_id: { type: "string" },
-      response_format: { type: "string" }
-    },
-    required: ["phone_number_id"]
-  },
+  zodSchema: GetPhoneNumberSchema,
 
   annotations: {
     readOnlyHint: true,
@@ -181,21 +169,7 @@ Error Handling:
   - Returns "Error: Phone number already exists" if already imported
   - Returns "Error: Invalid phone number format" if not E.164`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      phone_number: { type: "string" },
-      label: { type: "string" },
-      sid: { type: "string" },
-      token: { type: "string" },
-      provider: { type: "string" },
-      supports_inbound: { type: "boolean" },
-      supports_outbound: { type: "boolean" },
-      region_config: { type: "object" },
-      response_format: { type: "string" }
-    },
-    required: ["phone_number", "label", "sid", "token", "provider"]
-  },
+  zodSchema: ImportPhoneNumberSchema,
 
   annotations: {
     readOnlyHint: false,
@@ -272,18 +246,7 @@ Error Handling:
   - Returns "Error: Agent not found" if agent_id doesn't exist
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      phone_number_id: { type: "string" },
-      agent_id: { type: "string" },
-      inbound_trunk_config: { type: "object" },
-      outbound_trunk_config: { type: "object" },
-      livekit_stack: { type: "string" },
-      response_format: { type: "string" }
-    },
-    required: ["phone_number_id"]
-  },
+  zodSchema: UpdatePhoneNumberSchema,
 
   annotations: {
     readOnlyHint: false,
@@ -357,13 +320,7 @@ Error Handling:
   - Returns "Error: Phone number not found" if phone_number_id doesn't exist
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      phone_number_id: { type: "string" }
-    },
-    required: ["phone_number_id"]
-  },
+  zodSchema: DeletePhoneNumberSchema,
 
   annotations: {
     readOnlyHint: false,

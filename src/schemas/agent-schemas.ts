@@ -95,7 +95,7 @@ export const CreateAgentSchema = z.object({
   widget_avatar_url: URLSchema.optional().describe("Widget avatar image URL"),
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for getting an agent by ID
@@ -103,7 +103,7 @@ export const CreateAgentSchema = z.object({
 export const GetAgentSchema = z.object({
   agent_id: AgentIdSchema,
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for updating an agent
@@ -174,14 +174,14 @@ export const UpdateAgentSchema = z.object({
   widget_avatar_url: URLSchema.optional().describe("Updated widget avatar URL"),
 
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for deleting an agent
  */
 export const DeleteAgentSchema = z.object({
   agent_id: AgentIdSchema
-}).strict();
+}).passthrough();
 
 /**
  * Schema for listing agents
@@ -190,4 +190,4 @@ export const ListAgentsSchema = z.object({
   limit: LimitSchema,
   offset: OffsetSchema,
   response_format: ResponseFormatSchema
-}).strict();
+}).passthrough();

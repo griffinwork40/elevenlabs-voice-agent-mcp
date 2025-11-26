@@ -51,33 +51,7 @@ Error Handling:
   - Returns "Error: Tool name already exists" if name is taken
   - Returns "Error: Invalid URL" if webhook URL is not valid`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      agent_id: { type: "string" },
-      name: { type: "string" },
-      description: { type: "string" },
-      url: { type: "string" },
-      method: { type: "string" },
-      headers: { type: "object" },
-      parameters: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            name: { type: "string" },
-            type: { type: "string" },
-            description: { type: "string" },
-            required: { type: "boolean" },
-            enum: { type: "array", items: { type: "string" } }
-          },
-          required: ["name", "type", "description", "required"]
-        }
-      },
-      response_format: { type: "string" }
-    },
-    required: ["agent_id", "name", "description", "url", "parameters"]
-  },
+  zodSchema: CreateWebhookToolSchema,
 
   annotations: {
     readOnlyHint: false,
@@ -141,14 +115,7 @@ Error Handling:
   - Returns "Error: Agent not found" if agent_id doesn't exist
   - Returns empty list if agent has no tools`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      agent_id: { type: "string" },
-      response_format: { type: "string" }
-    },
-    required: ["agent_id"]
-  },
+  zodSchema: ListToolsSchema,
 
   annotations: {
     readOnlyHint: true,
@@ -200,14 +167,7 @@ Error Handling:
   - Returns "Error: Agent not found" if agent_id doesn't exist
   - Returns "Error: Tool not found" if tool_name doesn't exist`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      agent_id: { type: "string" },
-      tool_name: { type: "string" }
-    },
-    required: ["agent_id", "tool_name"]
-  },
+  zodSchema: DeleteToolSchema,
 
   annotations: {
     readOnlyHint: false,

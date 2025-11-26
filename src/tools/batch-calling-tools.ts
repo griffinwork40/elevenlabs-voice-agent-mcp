@@ -60,18 +60,7 @@ Error Handling:
   - Returns "Error: Phone number not assigned" if agent lacks phone number
   - Returns "Error: ZRM enabled" if Zero Retention Mode is active`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      call_name: { type: "string" },
-      agent_id: { type: "string" },
-      recipients: { type: "array" },
-      scheduled_time_unix: { type: "number" },
-      agent_phone_number_id: { type: "string" },
-      response_format: { type: "string" }
-    },
-    required: ["call_name", "agent_id", "recipients"]
-  },
+  zodSchema: SubmitBatchCallSchema,
 
   annotations: {
     readOnlyHint: false,
@@ -144,14 +133,7 @@ Error Handling:
   - Returns empty list if no batches exist
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      limit: { type: "number" },
-      last_doc: { type: "string" },
-      response_format: { type: "string" }
-    }
-  },
+  zodSchema: ListBatchCallsSchema,
 
   annotations: {
     readOnlyHint: true,
@@ -225,14 +207,7 @@ Error Handling:
   - Returns "Error: Batch not found" if batch_id doesn't exist
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      batch_id: { type: "string" },
-      response_format: { type: "string" }
-    },
-    required: ["batch_id"]
-  },
+  zodSchema: GetBatchCallSchema,
 
   annotations: {
     readOnlyHint: true,

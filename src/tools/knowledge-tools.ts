@@ -40,26 +40,7 @@ Error Handling:
   - Returns "Error: Invalid URL" if URL document is not accessible
   - Returns "Error: Document too large" if content exceeds size limits`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      agent_id: { type: "string" },
-      documents: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            type: { type: "string" },
-            content: { type: "string" },
-            metadata: { type: "object" }
-          },
-          required: ["type", "content"]
-        }
-      },
-      response_format: { type: "string" }
-    },
-    required: ["agent_id", "documents"]
-  },
+  zodSchema: AddKnowledgeBaseSchema,
 
   annotations: {
     readOnlyHint: false,

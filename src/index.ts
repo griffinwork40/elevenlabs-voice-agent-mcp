@@ -108,11 +108,15 @@ async function main() {
 
   // Register each tool with the server
   for (const tool of tools) {
-    server.tool(
+    server.registerTool(
       tool.name,
-      tool.description,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      tool.inputSchema as any,
+      {
+        description: tool.description,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        inputSchema: (tool as any).zodSchema,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        annotations: (tool as any).annotations
+      },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tool.handler as any
     );

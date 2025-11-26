@@ -58,26 +58,7 @@ Error Handling:
   - Returns "Error: Invalid API key" if authentication fails
   - Returns "Error: Rate limit exceeded" if too many requests (wait 60s and retry)`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      name: { type: "string" },
-      prompt: { type: "string" },
-      llm: { type: "string" },
-      voice_id: { type: "string" },
-      voice_model: { type: "string" },
-      first_message: { type: "string" },
-      language: { type: "string" },
-      temperature: { type: "number" },
-      max_tokens: { type: "number" },
-      stability: { type: "number" },
-      similarity_boost: { type: "number" },
-      widget_color: { type: "string" },
-      widget_avatar_url: { type: "string" },
-      response_format: { type: "string" }
-    },
-    required: ["name", "prompt"]
-  },
+  zodSchema: CreateAgentSchema,
 
   annotations: {
     readOnlyHint: false,
@@ -158,14 +139,7 @@ Error Handling:
   - Returns "Error: Agent not found" if agent_id doesn't exist
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      agent_id: { type: "string" },
-      response_format: { type: "string" }
-    },
-    required: ["agent_id"]
-  },
+  zodSchema: GetAgentSchema,
 
   annotations: {
     readOnlyHint: true,
@@ -228,27 +202,7 @@ Error Handling:
   - Returns "Error: Agent not found" if agent_id doesn't exist
   - Returns "Error: Invalid voice_id" if new voice doesn't exist`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      agent_id: { type: "string" },
-      name: { type: "string" },
-      prompt: { type: "string" },
-      llm: { type: "string" },
-      voice_id: { type: "string" },
-      voice_model: { type: "string" },
-      first_message: { type: "string" },
-      language: { type: "string" },
-      temperature: { type: "number" },
-      max_tokens: { type: "number" },
-      stability: { type: "number" },
-      similarity_boost: { type: "number" },
-      widget_color: { type: "string" },
-      widget_avatar_url: { type: "string" },
-      response_format: { type: "string" }
-    },
-    required: ["agent_id"]
-  },
+  zodSchema: UpdateAgentSchema,
 
   annotations: {
     readOnlyHint: false,
@@ -374,13 +328,7 @@ Error Handling:
   - Returns "Error: Agent not found" if agent_id doesn't exist
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      agent_id: { type: "string" }
-    },
-    required: ["agent_id"]
-  },
+  zodSchema: DeleteAgentSchema,
 
   annotations: {
     readOnlyHint: false,
@@ -432,14 +380,7 @@ Error Handling:
   - Returns empty list if no agents exist
   - Returns "Error: Invalid API key" if authentication fails`,
 
-  inputSchema: {
-    type: "object",
-    properties: {
-      limit: { type: "number" },
-      offset: { type: "number" },
-      response_format: { type: "string" }
-    }
-  },
+  zodSchema: ListAgentsSchema,
 
   annotations: {
     readOnlyHint: true,
