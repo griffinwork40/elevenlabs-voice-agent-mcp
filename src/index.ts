@@ -8,7 +8,6 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { validateApiKey } from "./utils/error-handlers.js";
 
 // Import all tools
@@ -110,14 +109,13 @@ async function main() {
   // Register each tool with the server
   for (const tool of tools) {
     const zodSchema = (tool as any).zodSchema;
-    const inputSchema = zodSchema ? zodToJsonSchema(zodSchema, tool.name) : undefined;
     const annotations = (tool as any).annotations;
 
     server.registerTool(
       tool.name,
       {
         description: tool.description,
-        ...(inputSchema && { inputSchema }),
+        ...(zodSchema && { inputSchema: zodSchema }),
         ...(annotations && { annotations })
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
