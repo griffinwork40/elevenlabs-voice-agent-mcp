@@ -77,6 +77,21 @@ ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 
 Get your API key from [ElevenLabs Settings](https://elevenlabs.io/app/settings/api-keys).
 
+### Claude Code Configuration
+
+Install the MCP server directly using the Claude Code CLI:
+
+```bash
+claude mcp add --transport stdio elevenlabs-voice-agents \
+  -e ELEVENLABS_API_KEY=your_key_here \
+  -- npx -y elevenlabs-voice-agent-mcp
+```
+
+This command:
+- Adds the MCP server with the name `elevenlabs-voice-agents`
+- Sets your ElevenLabs API key as an environment variable
+- Uses `npx` to automatically download and run the latest version
+
 ### Claude Desktop Configuration
 
 Add this to your Claude Desktop configuration file:
