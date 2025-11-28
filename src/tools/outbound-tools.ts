@@ -28,10 +28,11 @@ Args:
   - agent_phone_number_id (string): Phone number ID to use as caller ID
   - to_number (string): Destination phone number in E.164 format (e.g., '+1234567890')
   - conversation_initiation_client_data (object): Optional personalization data
-    - Dynamic variables (e.g., {name: 'John', user_id: '123', account_balance: 1500})
-    - config_overrides: Override agent settings for this call
+    - dynamic_variables (object): Dynamic variables for personalization
+      Example: {dynamic_variables: {name: 'John', user_id: '123', account_balance: 1500}}
+    - conversation_config_override (object): Override agent settings for this call
       - agent.first_message: Custom greeting for this call
-      - agent.system_prompt: Custom prompt for this call
+      - agent.prompt.prompt: Custom system prompt for this call
       - agent.language: Language override
       - tts.voice_id: Voice override
       - conversation.max_duration_seconds: Maximum call duration

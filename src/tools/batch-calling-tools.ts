@@ -35,8 +35,10 @@ Args:
     - OR whatsapp_user_id (string): WhatsApp user ID (alternative)
     - id (string, optional): Custom tracking ID for this recipient
     - conversation_initiation_client_data (object, optional): Personalization data
-      - Dynamic variables like {name: 'John', appointment_time: '3pm'}
-      - Special fields: language, first_message, system_prompt, voice_id
+      - dynamic_variables (object): Dynamic variables for personalization
+        Example: {dynamic_variables: {name: 'John', appointment_time: '3pm'}}
+      - conversation_config_override (object): Override agent settings for this call
+        - Special fields: language, first_message, prompt.prompt, voice_id
   - scheduled_time_unix (number, optional): Unix timestamp to schedule for future
   - agent_phone_number_id (string, optional): Phone number ID to use as caller ID
   - response_format ('markdown' | 'json'): Output format
