@@ -159,6 +159,9 @@ When adding new tools:
 - Phone numbers must be assigned to agents
 - Batch calling supports up to 10,000 recipients
 - Supports dynamic variables via `conversation_initiation_client_data`
+  - Dynamic variables must be nested: `{dynamic_variables: {name: 'John', user_id: '123'}}`
+  - Can also include `conversation_config_override` for per-call customization
+  - Example: `{dynamic_variables: {customer_name: "Alice"}, conversation_config_override: {agent: {first_message: "Hi!"}}}`
 
 ## Common Patterns
 
