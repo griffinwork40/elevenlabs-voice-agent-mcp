@@ -4,10 +4,10 @@
  * MCP tools for creating, retrieving, updating, deleting, and listing voice agents.
  */
 
-import { z } from "zod";
 import { getRequest, postRequest, patchRequest, deleteRequest } from "../services/elevenlabs-api.js";
 import { formatResponse } from "../services/formatters.js";
-import { Agent, PaginatedResponse, ResponseFormat } from "../types.js";
+import { createTextResponse } from "../utils/response.js";
+import { Agent, PaginatedResponse, MCPToolDefinition } from "../types.js";
 import {
   CreateAgentSchema,
   GetAgentSchema,
@@ -19,7 +19,7 @@ import {
 /**
  * Creates a new ElevenLabs Voice Agent
  */
-export const elevenlabs_create_agent = {
+export const elevenlabs_create_agent: MCPToolDefinition<typeof CreateAgentSchema> = {
   name: "elevenlabs_create_agent",
   description: `Create a new ElevenLabs Voice Agent with specified configuration.
 
@@ -103,21 +103,14 @@ Error Handling:
 
     const agent = await postRequest<Agent>("/convai/agents", agentData);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(agent, parsed.response_format, "agent")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(agent, parsed.response_format, "agent"));
   }
 };
 
 /**
  * Retrieves an agent by ID
  */
-export const elevenlabs_get_agent = {
+export const elevenlabs_get_agent: MCPToolDefinition<typeof GetAgentSchema> = {
   name: "elevenlabs_get_agent",
   description: `Retrieve complete configuration for an existing ElevenLabs Voice Agent.
 
@@ -152,21 +145,14 @@ Error Handling:
     const parsed = GetAgentSchema.parse(args);
     const agent = await getRequest<Agent>(`/convai/agents/${parsed.agent_id}`);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(agent, parsed.response_format, "agent")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(agent, parsed.response_format, "agent"));
   }
 };
 
 /**
  * Updates an existing agent
  */
-export const elevenlabs_update_agent = {
+export const elevenlabs_update_agent: MCPToolDefinition<typeof UpdateAgentSchema> = {
   name: "elevenlabs_update_agent",
   description: `Update an existing ElevenLabs Voice Agent's configuration.
 
@@ -292,21 +278,14 @@ Error Handling:
       updateData
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(updatedAgent, parsed.response_format, "agent")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(updatedAgent, parsed.response_format, "agent"));
   }
 };
 
 /**
  * Deletes an agent
  */
-export const elevenlabs_delete_agent = {
+export const elevenlabs_delete_agent: MCPToolDefinition<typeof DeleteAgentSchema> = {
   name: "elevenlabs_delete_agent",
   description: `Delete an ElevenLabs Voice Agent permanently.
 
@@ -341,21 +320,14 @@ Error Handling:
     const parsed = DeleteAgentSchema.parse(args);
     await deleteRequest(`/convai/agents/${parsed.agent_id}`);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Successfully deleted agent: ${parsed.agent_id}`
-        }
-      ]
-    };
+    return createTextResponse(`Successfully deleted agent: ${parsed.agent_id}`);
   }
 };
 
 /**
  * Lists all agents with pagination
  */
-export const elevenlabs_list_agents = {
+export const elevenlabs_list_agents: MCPToolDefinition<typeof ListAgentsSchema> = {
   name: "elevenlabs_list_agents",
   description: `List all ElevenLabs Voice Agents with pagination.
 
@@ -413,13 +385,6 @@ Error Handling:
       next_offset: hasMore ? parsed.offset + agents.length : undefined
     };
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(paginatedResponse, parsed.response_format, "agent_list")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(paginatedResponse, parsed.response_format, "agent_list"));
   }
 };
