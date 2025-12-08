@@ -1,0 +1,50 @@
+# Source files (only dist/ should be published)
+src/
+tsconfig.json
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation (keep README.md, ignore others)
+AGENTS.md
+CLAUDE.md
+
+# Demo/test files
+demo-agent-system-prompt.xml
+csv/
+*.csv
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts (we'll include dist/ but not the tgz)
+*.tgz
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Git
+.git/
+.gitignore
+
+# TypeScript cache
+*.tsbuildinfo
+
