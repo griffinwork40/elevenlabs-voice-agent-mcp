@@ -1,6 +1,6 @@
 {
   "name": "elevenlabs-voice-agent-mcp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MCP server for ElevenLabs Voice Agent Development",
   "type": "module",
   "main": "dist/index.js",
