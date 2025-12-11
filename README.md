@@ -120,6 +120,157 @@ After adding the configuration:
 2. Restart Claude Desktop
 3. Look for the 🔌 icon to verify the server is connected
 
+## MCP Client Configuration (common clients)
+
+The server uses **stdio transport**. Below are ready-to-use configs for popular clients. Always use **absolute paths** for local builds and set `ELEVENLABS_API_KEY` via env (never commit it).
+
+### Quick reference
+
+| Client           | Config path (macOS/Linux)                            | Config path (Windows)                          | Transport | Recommended |
+| ---------------- | ---------------------------------------------------- | ---------------------------------------------- | --------- | ----------- |
+| Cursor           | `~/.cursor/mcp.json`                                | `%USERPROFILE%\.cursor\mcp.json`               | stdio     | `npx`       |
+| Claude Desktop   | `~/Library/Application Support/Claude/claude_desktop_config.json` | `%APPDATA%\Claude\claude_desktop_config.json`  | stdio     | `npx`       |
+| Claude Code CLI  | n/a (CLI command)                                   | n/a                                            | stdio     | `npx`       |
+| Codex CLI        | n/a (CLI command)                                   | n/a                                            | stdio     | `npx`       |
+| VS Code (user/workspace) | `.vscode/mcp.json`                          | `.vscode/mcp.json`                             | stdio     | `npx`       |
+| Hosted (Railway) | Env vars in Railway dashboard                       | Env vars in Railway dashboard                  | http/stdio bridge | hosted URL |
+
+### Common snippets
+
+- **Stdio via npx (auto-updates)**
+```json
+{
+  "mcpServers": {
+    "elevenlabs-voice-agents": {
+      "command": "npx",
+      "args": ["-y", "elevenlabs-voice-agent-mcp"],
+      "env": { "ELEVENLABS_API_KEY": "your_key_here" }
+    }
+  }
+}
+```
+
+- **Stdio via local build (for development)**
+```json
+{
+  "mcpServers": {
+    "elevenlabs-voice-agents": {
+      "command": "node",
+      "args": ["/absolute/path/to/elevenlabs-voice-agent-mcp/dist/index.js"],
+      "env": { "ELEVENLABS_API_KEY": "your_key_here" }
+    }
+  }
+}
+```
+
+- **Hosted HTTP (if you wrap stdio with an HTTP bridge such as mcp-remote)**  
+Use only if you front the stdio server with an HTTP transport:
+```json
+{
+  "mcpServers": {
+    "elevenlabs-voice-agents": {
+      "url": "https://your-hosted-mcp.example.com/mcp",
+      "type": "http"
+    }
+  }
+}
+```
+
+### Cursor IDE
+
+Config file: `~/.cursor/mcp.json` (macOS/Linux) or `%USERPROFILE%\.cursor\mcp.json` (Windows).
+
+- **Method 1 (recommended, npx stdio):** use the **Stdio via npx** snippet above.
+- **Method 2 (local build):** use the **Stdio via local build** snippet.
+- Restart Cursor after saving. Verify via wrench icon or run an MCP command.
+- Troubleshooting: ensure absolute paths, check `ELEVENLABS_API_KEY`, and confirm Node 18+.
+
+### Claude Desktop
+
+Config file: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows).
+
+- **Method 1 (npx stdio):**
+```json
+{
+  "mcpServers": {
+    "elevenlabs-voice-agents": {
+      "command": "npx",
+      "args": ["-y", "elevenlabs-voice-agent-mcp"],
+      "env": { "ELEVENLABS_API_KEY": "your_key_here" }
+    }
+  }
+}
+```
+- **Method 2 (local build):** use the local build snippet and point to your `dist/index.js`.
+- Restart Claude Desktop. In a new chat, ask “What tools do you have?” to verify.
+
+### Claude Code CLI
+
+Run (stdio via npx):
+```bash
+claude mcp add --transport stdio elevenlabs-voice-agents \
+  -e ELEVENLABS_API_KEY=your_key_here \
+  -- npx -y elevenlabs-voice-agent-mcp
+```
+
+For local builds, replace the `npx` portion with `node /absolute/path/to/dist/index.js`.
+
+### Codex CLI
+
+Codex CLI also supports stdio MCP servers. Configure similarly:
+```bash
+codex mcp add --transport stdio elevenlabs-voice-agents \
+  -e ELEVENLABS_API_KEY=your_key_here \
+  -- npx -y elevenlabs-voice-agent-mcp
+```
+If using a local build, swap `npx -y elevenlabs-voice-agent-mcp` with `node /absolute/path/to/dist/index.js`.
+
+### VS Code (via mcp.json)
+
+Add `.vscode/mcp.json` to your workspace:
+```json
+{
+  "servers": {
+    "elevenlabs-voice-agents": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "elevenlabs-voice-agent-mcp"],
+      "env": { "ELEVENLABS_API_KEY": "your_key_here" }
+    }
+  }
+}
+```
+Restart VS Code after saving.
+
+### Remote hosting (Railway example)
+
+The MCP server is stdio-first. To host it, deploy the Node app and, if you need HTTP, wrap it with an MCP HTTP bridge such as `mcp-remote`.
+
+1) Deploy to Railway (Node 18):
+- Repo: this project
+- Env vars: `ELEVENLABS_API_KEY`
+- Start command: `npm run build && npm start`
+
+2) Expose for HTTP MCP clients (optional):
+- Add a process running `npx -y mcp-remote http://0.0.0.0:3000` (or your chosen bridge) pointing to the stdio server, or use an MCP HTTP wrapper you control. Adjust health checks/ports accordingly.
+
+3) Client config (HTTP):
+- Use the **Hosted HTTP** snippet with your Railway URL.
+
+### Other hosting (Render, Fly.io, etc.)
+
+- Build on deploy: `npm run build` then `npm start`.
+- Set `ELEVENLABS_API_KEY` in the platform’s env settings.
+- If the platform only fronts HTTP, add an MCP HTTP bridge (e.g., `mcp-remote`) in front of the stdio server and use the hosted HTTP snippet.
+
+### Troubleshooting (all clients)
+
+- Server won’t start: ensure `ELEVENLABS_API_KEY` is set; Node 18+; run `npm run build`.
+- Tools not appearing: check absolute paths in config, restart client, verify stdio transport.
+- Auth errors: confirm the API key in env; avoid placing the key in config files.
+- Path issues: always use absolute paths for `dist/index.js`.
+- Hosted mode: ensure your HTTP bridge points to the stdio server and the URL is reachable.
+
 ## Quick Start: Outbound Calling
 
 ### 1. Import a Twilio Phone Number
@@ -319,11 +470,15 @@ The response includes:
 
 ### Supported LLM Models
 
+The MCP server accepts any valid ElevenLabs model identifier. Common options include:
+
 - `gpt-4o`
 - `gpt-4o-mini` (default)
 - `claude-3-5-sonnet-20241022`
 - `claude-3-5-haiku-20241022`
 - `gemini-2.0-flash-exp`
+
+**Note:** ElevenLabs may add new models over time. You can use any model identifier without needing to update the MCP server code - the validation accepts any string value.
 
 ### Supported Voice Models
 

@@ -38,11 +38,10 @@ export const CreateAgentSchema = z.object({
     .max(5000, "Prompt must not exceed 5000 characters")
     .describe("System prompt defining agent behavior and personality"),
 
-  llm: z.enum(SUPPORTED_LLMS, {
-    errorMap: () => ({ message: `LLM must be one of: ${SUPPORTED_LLMS.join(", ")}` })
-  })
+  llm: z.string()
+    .min(1, "LLM model name is required")
     .default(DEFAULT_LLM)
-    .describe(`LLM model to use (default: ${DEFAULT_LLM})`),
+    .describe(`LLM model identifier (default: ${DEFAULT_LLM}). Common options: ${SUPPORTED_LLMS.join(", ")}. Any valid ElevenLabs model identifier is accepted.`),
 
   voice_id: VoiceIdSchema
     .default(DEFAULT_VOICE_ID)
@@ -123,9 +122,10 @@ export const UpdateAgentSchema = z.object({
     .optional()
     .describe("Updated system prompt"),
 
-  llm: z.enum(SUPPORTED_LLMS)
+  llm: z.string()
+    .min(1, "LLM model name cannot be empty")
     .optional()
-    .describe("Updated LLM model"),
+    .describe(`Updated LLM model identifier. Common options: ${SUPPORTED_LLMS.join(", ")}. Any valid ElevenLabs model identifier is accepted.`),
 
   voice_id: VoiceIdSchema
     .optional()

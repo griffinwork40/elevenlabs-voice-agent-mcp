@@ -28,8 +28,9 @@ This tool creates a complete voice agent with conversation settings, including t
 Args:
   - name (string): Display name for the agent (max 100 chars)
   - prompt (string): System prompt defining behavior (10-5000 chars)
-  - llm (string): AI model to use (default: "gpt-4o-mini")
-    Options: gpt-4o, gpt-4o-mini, claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022, gemini-2.0-flash-exp
+  - llm (string): AI model identifier to use (default: "gpt-4o-mini")
+    Common options: gpt-4o, gpt-4o-mini, claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022, gemini-2.0-flash-exp
+    Any valid ElevenLabs model identifier is accepted (new models may be available)
   - voice_id (string): ElevenLabs voice ID (default: "21m00Tcm4TlvDq8ikWAM" - Rachel)
   - voice_model (string): Voice synthesis model (default: "eleven_flash_v2_5")
     Options: eleven_turbo_v2_5, eleven_flash_v2_5, eleven_multilingual_v2

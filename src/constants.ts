@@ -18,7 +18,8 @@ export const DEFAULT_VOICE_MODEL = "eleven_flash_v2_5";
 export const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Rachel voice
 export const DEFAULT_LANGUAGE = "en";
 
-// Supported LLM models
+// Common LLM models (examples - any valid ElevenLabs model identifier is accepted)
+// These are provided as defaults/examples; ElevenLabs may add new models that work without code changes
 export const SUPPORTED_LLMS = [
   "gpt-4o",
   "gpt-4o-mini",

@@ -12,7 +12,8 @@ export enum ResponseFormat {
   JSON = "json"
 }
 
-export type LLMModel = typeof SUPPORTED_LLMS[number];
+// LLM model identifier - accepts any string (ElevenLabs may add new models)
+export type LLMModel = string;
 export type VoiceModel = typeof SUPPORTED_VOICE_MODELS[number];
 export type Language = typeof SUPPORTED_LANGUAGES[number];
 export type AuthType = typeof AUTH_TYPES[number];
