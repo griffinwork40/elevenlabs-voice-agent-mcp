@@ -146,8 +146,14 @@ When adding new tools:
 5. Rebuild with `npm run build`
 
 ### Constants and Defaults
-- Default LLM: `gpt-4o-mini`
-- Default voice model: `eleven_flash_v2_5`
+- Default LLM: `claude-sonnet-4-5-20250929` (Claude Sonnet 4.5)
+- Default voice model: `eleven_turbo_v2_5` (supports 32 languages with high quality)
+- Supported voice models:
+  - `eleven_flash_v2` (English only, low latency)
+  - `eleven_turbo_v2` (English only, higher quality)
+  - `eleven_flash_v2_5` (32 languages, low latency)
+  - `eleven_turbo_v2_5` (32 languages, higher quality)
+  - `eleven_multilingual_v2` (multilingual support)
 - Default language: `en`
 - Character limit: 25,000
 - Request timeout: 30 seconds
