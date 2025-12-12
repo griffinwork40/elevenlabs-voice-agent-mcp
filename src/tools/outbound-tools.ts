@@ -6,13 +6,14 @@
 
 import { postRequest } from "../services/elevenlabs-api.js";
 import { formatResponse } from "../services/formatters.js";
-import { OutboundCallResponse } from "../types.js";
+import { createTextResponse } from "../utils/response.js";
+import { OutboundCallResponse, MCPToolDefinition } from "../types.js";
 import { StartOutboundCallSchema } from "../schemas/outbound-schemas.js";
 
 /**
  * Starts a single outbound call via Twilio
  */
-export const elevenlabs_start_outbound_call = {
+export const elevenlabs_start_outbound_call: MCPToolDefinition<typeof StartOutboundCallSchema> = {
   name: "elevenlabs_start_outbound_call",
   description: `Initiate a single outbound phone call using an ElevenLabs Voice Agent via Twilio.
 
@@ -83,13 +84,6 @@ Error Handling:
       requestData
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(response, parsed.response_format, "outbound_call")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(response, parsed.response_format, "outbound_call"));
   }
 };

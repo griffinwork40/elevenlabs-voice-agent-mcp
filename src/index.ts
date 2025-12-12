@@ -9,6 +9,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { validateApiKey } from "./utils/error-handlers.js";
+import { MCPToolDefinition } from "./types.js";
 
 // Import all tools
 import {
@@ -71,8 +72,8 @@ async function main() {
     version: "1.0.0"
   });
 
-  // Register all tools
-  const tools = [
+  // Register all tools with proper typing
+  const tools: MCPToolDefinition[] = [
     // Tier 1: Core Agent Management
     elevenlabs_create_agent,
     elevenlabs_get_agent,
@@ -108,18 +109,14 @@ async function main() {
 
   // Register each tool with the server
   for (const tool of tools) {
-    const zodSchema = (tool as any).zodSchema;
-    const annotations = (tool as any).annotations;
-
     server.registerTool(
       tool.name,
       {
         description: tool.description,
-        ...(zodSchema && { inputSchema: zodSchema }),
-        ...(annotations && { annotations })
+        inputSchema: tool.zodSchema,
+        ...(tool.annotations && { annotations: tool.annotations })
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      tool.handler as any
+      tool.handler
     );
   }
 

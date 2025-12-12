@@ -6,7 +6,8 @@
 
 import { getRequest } from "../services/elevenlabs-api.js";
 import { formatResponse, formatWidgetCode } from "../services/formatters.js";
-import { Voice } from "../types.js";
+import { createTextResponse } from "../utils/response.js";
+import { Voice, MCPToolDefinition } from "../types.js";
 import {
   GenerateWidgetCodeSchema,
   ListVoicesSchema
@@ -15,7 +16,7 @@ import {
 /**
  * Generates widget embed code for testing an agent
  */
-export const elevenlabs_generate_widget_code = {
+export const elevenlabs_generate_widget_code: MCPToolDefinition<typeof GenerateWidgetCodeSchema> = {
   name: "elevenlabs_generate_widget_code",
   description: `Generate HTML embed code to test a voice agent on a webpage.
 
@@ -60,21 +61,14 @@ Error Handling:
       parsed.avatar_url
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: widgetCode
-        }
-      ]
-    };
+    return createTextResponse(widgetCode);
   }
 };
 
 /**
  * Lists available voices with filtering
  */
-export const elevenlabs_list_voices = {
+export const elevenlabs_list_voices: MCPToolDefinition<typeof ListVoicesSchema> = {
   name: "elevenlabs_list_voices",
   description: `Browse available ElevenLabs voices with optional filtering.
 
@@ -135,13 +129,6 @@ Error Handling:
 
     const voices = (response.voices || []).slice(0, parsed.limit);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(voices, parsed.response_format, "voice_list")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(voices, parsed.response_format, "voice_list"));
   }
 };

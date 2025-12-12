@@ -6,7 +6,8 @@
 
 import { getRequest, postRequest } from "../services/elevenlabs-api.js";
 import { formatResponse } from "../services/formatters.js";
-import { BatchCallResponse, BatchCallDetailedResponse, WorkspaceBatchCallsResponse } from "../types.js";
+import { createTextResponse } from "../utils/response.js";
+import { BatchCallResponse, BatchCallDetailedResponse, WorkspaceBatchCallsResponse, MCPToolDefinition } from "../types.js";
 import {
   SubmitBatchCallSchema,
   ListBatchCallsSchema,
@@ -16,7 +17,7 @@ import {
 /**
  * Submits a batch calling job
  */
-export const elevenlabs_submit_batch_call = {
+export const elevenlabs_submit_batch_call: MCPToolDefinition<typeof SubmitBatchCallSchema> = {
   name: "elevenlabs_submit_batch_call",
   description: `Submit a batch calling job to initiate multiple outbound calls simultaneously.
 
@@ -91,21 +92,14 @@ Error Handling:
       requestData
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(response, parsed.response_format, "batch_call")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(response, parsed.response_format, "batch_call"));
   }
 };
 
 /**
  * Lists all batch calling jobs in workspace
  */
-export const elevenlabs_list_batch_calls = {
+export const elevenlabs_list_batch_calls: MCPToolDefinition<typeof ListBatchCallsSchema> = {
   name: "elevenlabs_list_batch_calls",
   description: `List all batch calling jobs in your workspace with pagination.
 
@@ -160,21 +154,14 @@ Error Handling:
       params
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(response, parsed.response_format, "batch_call_list")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(response, parsed.response_format, "batch_call_list"));
   }
 };
 
 /**
  * Gets detailed information about a specific batch call
  */
-export const elevenlabs_get_batch_call = {
+export const elevenlabs_get_batch_call: MCPToolDefinition<typeof GetBatchCallSchema> = {
   name: "elevenlabs_get_batch_call",
   description: `Get detailed information about a specific batch calling job including all recipient statuses.
 
@@ -225,13 +212,6 @@ Error Handling:
       `/convai/batch-calling/${parsed.batch_id}`
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(response, parsed.response_format, "batch_call_detail")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(response, parsed.response_format, "batch_call_detail"));
   }
 };

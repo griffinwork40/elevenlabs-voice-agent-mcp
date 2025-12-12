@@ -6,13 +6,14 @@
 
 import { postRequest } from "../services/elevenlabs-api.js";
 import { formatResponse } from "../services/formatters.js";
-import { ResponseFormat } from "../types.js";
+import { createTextResponse } from "../utils/response.js";
+import { ResponseFormat, MCPToolDefinition } from "../types.js";
 import { AddKnowledgeBaseSchema } from "../schemas/tool-schemas.js";
 
 /**
  * Adds documents to an agent's knowledge base
  */
-export const elevenlabs_add_knowledge_base = {
+export const elevenlabs_add_knowledge_base: MCPToolDefinition<typeof AddKnowledgeBaseSchema> = {
   name: "elevenlabs_add_knowledge_base",
   description: `Add documents or URLs to an agent's knowledge base.
 
@@ -59,15 +60,10 @@ Error Handling:
 
     const message = `Successfully added ${parsed.documents.length} document(s) to agent ${parsed.agent_id}'s knowledge base.`;
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: parsed.response_format === ResponseFormat.JSON
-            ? formatResponse({ success: true, message, documents_added: parsed.documents.length }, parsed.response_format, "generic")
-            : message
-        }
-      ]
-    };
+    const responseText = parsed.response_format === ResponseFormat.JSON
+      ? formatResponse({ success: true, message, documents_added: parsed.documents.length }, parsed.response_format, "generic")
+      : message;
+
+    return createTextResponse(responseText);
   }
 };

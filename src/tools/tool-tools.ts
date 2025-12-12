@@ -6,7 +6,8 @@
 
 import { getRequest, postRequest, deleteRequest } from "../services/elevenlabs-api.js";
 import { formatResponse } from "../services/formatters.js";
-import { ToolConfig, Agent } from "../types.js";
+import { createTextResponse } from "../utils/response.js";
+import { ToolConfig, Agent, MCPToolDefinition } from "../types.js";
 import {
   CreateWebhookToolSchema,
   ListToolsSchema,
@@ -16,7 +17,7 @@ import {
 /**
  * Creates a webhook tool for an agent
  */
-export const elevenlabs_create_webhook_tool = {
+export const elevenlabs_create_webhook_tool: MCPToolDefinition<typeof CreateWebhookToolSchema> = {
   name: "elevenlabs_create_webhook_tool",
   description: `Create a webhook tool that the agent can invoke during conversations.
 
@@ -78,21 +79,14 @@ Error Handling:
       toolData
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(tool, parsed.response_format, "tool")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(tool, parsed.response_format, "tool"));
   }
 };
 
 /**
  * Lists all tools configured for an agent
  */
-export const elevenlabs_list_tools = {
+export const elevenlabs_list_tools: MCPToolDefinition<typeof ListToolsSchema> = {
   name: "elevenlabs_list_tools",
   description: `List all tools configured for an agent.
 
@@ -131,21 +125,14 @@ Error Handling:
     const agent = await getRequest<Agent>(`/convai/agents/${parsed.agent_id}`);
     const tools = agent.conversation_config.agent.prompt.tools || [];
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(tools, parsed.response_format, "tool_list")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(tools, parsed.response_format, "tool_list"));
   }
 };
 
 /**
  * Deletes a tool from an agent
  */
-export const elevenlabs_delete_tool = {
+export const elevenlabs_delete_tool: MCPToolDefinition<typeof DeleteToolSchema> = {
   name: "elevenlabs_delete_tool",
   description: `Remove a webhook tool from an agent.
 
@@ -183,13 +170,6 @@ Error Handling:
       `/convai/agents/${parsed.agent_id}/tools/${parsed.tool_name}`
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Successfully deleted tool "${parsed.tool_name}" from agent ${parsed.agent_id}`
-        }
-      ]
-    };
+    return createTextResponse(`Successfully deleted tool "${parsed.tool_name}" from agent ${parsed.agent_id}`);
   }
 };
