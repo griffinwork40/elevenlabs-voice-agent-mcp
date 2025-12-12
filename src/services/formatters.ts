@@ -91,7 +91,9 @@ export function formatAgentListMarkdown(
   offset: number,
   hasMore: boolean
 ): string {
-  let markdown = `# Agents (${agents.length} of ${total})\n\n`;
+  // Since the API doesn't provide a total count, show accurate pagination info
+  const countLabel = hasMore ? `${agents.length} shown` : `${agents.length} total`;
+  let markdown = `# Agents (${countLabel})\n\n`;
 
   if (agents.length === 0) {
     return markdown + "No agents found.\n";
