@@ -7,6 +7,7 @@
 
 import {
   Agent,
+  AgentListItem,
   ConversationMetadata,
   ToolConfig,
   Voice,
@@ -85,7 +86,7 @@ export function formatAgentMarkdown(agent: Agent): string {
  * Formats a list of agents in Markdown format
  */
 export function formatAgentListMarkdown(
-  agents: Agent[],
+  agents: AgentListItem[],
   total: number,
   offset: number,
   hasMore: boolean
@@ -100,9 +101,19 @@ export function formatAgentListMarkdown(
     const num = offset + idx + 1;
     markdown += `## ${num}. ${agent.name}\n`;
     markdown += `- **ID**: ${agent.agent_id}\n`;
-    markdown += `- **LLM**: ${agent.conversation_config.agent.prompt.llm}\n`;
-    markdown += `- **Language**: ${agent.conversation_config.agent.language}\n`;
-    markdown += `- **Created**: ${new Date(agent.created_at).toISOString()}\n\n`;
+    markdown += `- **Created**: ${new Date(agent.created_at_unix_secs * 1000).toISOString()}\n`;
+
+    if (agent.last_call_time_unix_secs) {
+      markdown += `- **Last Call**: ${new Date(agent.last_call_time_unix_secs * 1000).toISOString()}\n`;
+    }
+
+    markdown += `- **Status**: ${agent.archived ? 'Archived' : 'Active'}\n`;
+
+    if (agent.tags && agent.tags.length > 0) {
+      markdown += `- **Tags**: ${agent.tags.join(', ')}\n`;
+    }
+
+    markdown += `\n`;
   });
 
   if (hasMore) {
@@ -561,7 +572,7 @@ export function formatResponse(
       return formatAgentMarkdown(data as Agent);
 
     case "agent_list": {
-      const paginated = data as PaginatedResponse<Agent>;
+      const paginated = data as PaginatedResponse<AgentListItem>;
       return formatAgentListMarkdown(
         paginated.items,
         paginated.total,

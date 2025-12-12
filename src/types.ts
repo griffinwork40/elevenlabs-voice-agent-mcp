@@ -71,6 +71,22 @@ export interface Agent {
   updated_at?: string;
 }
 
+// Agent List Item (used by list agents endpoint - different structure than full Agent)
+export interface AgentListItem {
+  agent_id: string;
+  name: string;
+  tags?: string[];
+  created_at_unix_secs: number;
+  access_info?: {
+    is_creator: boolean;
+    creator_name: string;
+    creator_email: string;
+    role: string;
+  };
+  last_call_time_unix_secs?: number;
+  archived: boolean;
+}
+
 // Tool Configuration
 export interface ToolParameter {
   name: string;
