@@ -102,7 +102,7 @@ Error Handling:
       } : {})
     };
 
-    const agent = await postRequest<Agent>("/convai/agents", agentData);
+    const agent = await postRequest<Agent>("/convai/agents/create", agentData);
 
     return {
       content: [
