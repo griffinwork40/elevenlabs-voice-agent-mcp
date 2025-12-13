@@ -87,7 +87,6 @@ export function formatAgentMarkdown(agent: Agent): string {
  */
 export function formatAgentListMarkdown(
   agents: AgentListItem[],
-  total: number,
   offset: number,
   hasMore: boolean
 ): string {
@@ -103,15 +102,20 @@ export function formatAgentListMarkdown(
     const num = offset + idx + 1;
     markdown += `## ${num}. ${agent.name}\n`;
     markdown += `- **ID**: ${agent.agent_id}\n`;
-    markdown += `- **Created**: ${new Date(agent.created_at_unix_secs * 1000).toISOString()}\n`;
 
-    if (agent.last_call_time_unix_secs) {
+    // Defensive timestamp handling - ensure valid timestamp before conversion
+    if (agent.created_at_unix_secs && agent.created_at_unix_secs > 0) {
+      markdown += `- **Created**: ${new Date(agent.created_at_unix_secs * 1000).toISOString()}\n`;
+    }
+
+    if (agent.last_call_time_unix_secs && agent.last_call_time_unix_secs > 0) {
       markdown += `- **Last Call**: ${new Date(agent.last_call_time_unix_secs * 1000).toISOString()}\n`;
     }
 
     markdown += `- **Status**: ${agent.archived ? 'Archived' : 'Active'}\n`;
 
-    if (agent.tags && agent.tags.length > 0) {
+    // Use optional chaining for cleaner optional field checking
+    if (agent.tags?.length) {
       markdown += `- **Tags**: ${agent.tags.join(', ')}\n`;
     }
 
@@ -577,7 +581,6 @@ export function formatResponse(
       const paginated = data as PaginatedResponse<AgentListItem>;
       return formatAgentListMarkdown(
         paginated.items,
-        paginated.total,
         paginated.offset,
         paginated.has_more
       );
