@@ -13,23 +13,31 @@ export const DEFAULT_LIMIT = 20;
 export const MAX_LIMIT = 100;
 
 // Default configuration values
-export const DEFAULT_LLM = "gpt-4o-mini";
-export const DEFAULT_VOICE_MODEL = "eleven_flash_v2_5";
+export const DEFAULT_LLM = "claude-sonnet-4-5-20250929"; // Claude Sonnet 4.5
+export const DEFAULT_VOICE_MODEL = "eleven_turbo_v2_5"; // Turbo v2.5 supports 32 languages with high quality
 export const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Rachel voice
 export const DEFAULT_LANGUAGE = "en";
 
-// Supported LLM models
+// Common LLM models (examples - any valid ElevenLabs model identifier is accepted)
+// These are provided as defaults/examples; ElevenLabs may add new models that work without code changes
 export const SUPPORTED_LLMS = [
   "gpt-4o",
   "gpt-4o-mini",
+  "claude-sonnet-4-5-20250929",
+  "claude-sonnet-4-20250514",
   "claude-3-5-sonnet-20241022",
   "claude-3-5-haiku-20241022",
   "gemini-2.0-flash-exp"
 ] as const;
 
-// Supported voice models
+// Supported voice models for conversational AI agents
+// v2 models (turbo_v2, flash_v2) are optimized for English only
+// v2.5 models (turbo_v2_5, flash_v2_5) support 32 languages
+// multilingual_v2 supports multiple languages
 export const SUPPORTED_VOICE_MODELS = [
+  "eleven_turbo_v2",
   "eleven_turbo_v2_5",
+  "eleven_flash_v2",
   "eleven_flash_v2_5",
   "eleven_multilingual_v2"
 ] as const;

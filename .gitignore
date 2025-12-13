@@ -33,3 +33,12 @@ yarn-error.log*
 # Testing
 coverage/
 .nyc_output/
+
+# Local data files
+/csv/
+
+# Demo/local config files
+demo-agent-system-prompt.xml
+
+# Build artifacts
+*.tgz
