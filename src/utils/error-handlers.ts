@@ -21,8 +21,11 @@ export function handleElevenLabsError(error: unknown, context?: string): string 
     if (error.response) {
       // Server responded with error status
       const status = error.response.status;
-      const data = error.response.data as { detail?: string; message?: string };
-      const detail = data?.detail || data?.message;
+      const data = error.response.data as { detail?: unknown; message?: string };
+      // Handle case where detail is an object (stringify it for readability)
+      const detail = typeof data?.detail === 'object'
+        ? JSON.stringify(data.detail)
+        : (data?.detail as string | undefined) || data?.message;
 
       switch (status) {
         case 400:
