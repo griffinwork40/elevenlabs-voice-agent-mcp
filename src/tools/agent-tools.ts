@@ -95,6 +95,16 @@ Error Handling:
           model_id: parsed.voice_model,
           ...(parsed.stability !== undefined && { stability: parsed.stability }),
           ...(parsed.similarity_boost !== undefined && { similarity_boost: parsed.similarity_boost })
+        },
+        // ASR (Automatic Speech Recognition) configuration - required by ElevenLabs API
+        asr: {
+          provider: "elevenlabs",
+          user_input_audio_format: "pcm_16000"
+        },
+        // Turn-taking configuration - required by ElevenLabs API
+        turn: {
+          turn_timeout: 10,
+          silence_end_call_timeout: 15
         }
       },
       ...(parsed.widget_color || parsed.widget_avatar_url ? {
