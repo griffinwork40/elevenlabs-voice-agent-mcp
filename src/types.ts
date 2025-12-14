@@ -71,6 +71,33 @@ export interface Agent {
   updated_at?: string;
 }
 
+/**
+ * Agent List Item - Lightweight agent representation returned by the list agents endpoint
+ *
+ * The ElevenLabs API returns different structures for list vs get operations:
+ * - List endpoint (/convai/agents): Returns this simplified structure without conversation_config
+ * - Get endpoint (/convai/agents/{id}): Returns the full Agent interface with all nested config
+ *
+ * This separation allows the list endpoint to be more performant by not fetching
+ * unnecessary conversation configuration data when displaying agent summaries.
+ */
+export interface AgentListItem {
+  agent_id: string;
+  name: string;
+  tags?: string[];
+  /** Unix timestamp in seconds */
+  created_at_unix_secs: number;
+  access_info?: {
+    is_creator: boolean;
+    creator_name: string;
+    creator_email: string;
+    role: string;
+  };
+  /** Unix timestamp in seconds - when the agent last received a call */
+  last_call_time_unix_secs?: number;
+  archived: boolean;
+}
+
 // Tool Configuration
 export interface ToolParameter {
   name: string;

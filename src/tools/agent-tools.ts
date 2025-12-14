@@ -7,7 +7,7 @@
 import { z } from "zod";
 import { getRequest, postRequest, patchRequest, deleteRequest } from "../services/elevenlabs-api.js";
 import { formatResponse } from "../services/formatters.js";
-import { Agent, PaginatedResponse, ResponseFormat } from "../types.js";
+import { Agent, AgentListItem, PaginatedResponse, ResponseFormat } from "../types.js";
 import {
   CreateAgentSchema,
   GetAgentSchema,
@@ -408,7 +408,7 @@ Error Handling:
   handler: async (args: unknown) => {
     const parsed = ListAgentsSchema.parse(args);
 
-    const response = await getRequest<{ agents: Agent[] }>(
+    const response = await getRequest<{ agents: AgentListItem[] }>(
       "/convai/agents",
       {
         limit: parsed.limit,
@@ -420,7 +420,7 @@ Error Handling:
     const total = agents.length; // Note: ElevenLabs API may not return total count
     const hasMore = agents.length === parsed.limit;
 
-    const paginatedResponse: PaginatedResponse<Agent> = {
+    const paginatedResponse: PaginatedResponse<AgentListItem> = {
       total,
       count: agents.length,
       offset: parsed.offset,

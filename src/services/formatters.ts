@@ -7,6 +7,7 @@
 
 import {
   Agent,
+  AgentListItem,
   ConversationMetadata,
   ToolConfig,
   Voice,
@@ -85,12 +86,13 @@ export function formatAgentMarkdown(agent: Agent): string {
  * Formats a list of agents in Markdown format
  */
 export function formatAgentListMarkdown(
-  agents: Agent[],
-  total: number,
+  agents: AgentListItem[],
   offset: number,
   hasMore: boolean
 ): string {
-  let markdown = `# Agents (${agents.length} of ${total})\n\n`;
+  // Since the API doesn't provide a total count, show accurate pagination info
+  const countLabel = hasMore ? `${agents.length} shown` : `${agents.length} total`;
+  let markdown = `# Agents (${countLabel})\n\n`;
 
   if (agents.length === 0) {
     return markdown + "No agents found.\n";
@@ -100,9 +102,24 @@ export function formatAgentListMarkdown(
     const num = offset + idx + 1;
     markdown += `## ${num}. ${agent.name}\n`;
     markdown += `- **ID**: ${agent.agent_id}\n`;
-    markdown += `- **LLM**: ${agent.conversation_config.agent.prompt.llm}\n`;
-    markdown += `- **Language**: ${agent.conversation_config.agent.language}\n`;
-    markdown += `- **Created**: ${new Date(agent.created_at).toISOString()}\n\n`;
+
+    // Defensive timestamp handling - ensure valid timestamp before conversion
+    if (agent.created_at_unix_secs && agent.created_at_unix_secs > 0) {
+      markdown += `- **Created**: ${new Date(agent.created_at_unix_secs * 1000).toISOString()}\n`;
+    }
+
+    if (agent.last_call_time_unix_secs && agent.last_call_time_unix_secs > 0) {
+      markdown += `- **Last Call**: ${new Date(agent.last_call_time_unix_secs * 1000).toISOString()}\n`;
+    }
+
+    markdown += `- **Status**: ${agent.archived ? 'Archived' : 'Active'}\n`;
+
+    // Use optional chaining for cleaner optional field checking
+    if (agent.tags?.length) {
+      markdown += `- **Tags**: ${agent.tags.join(', ')}\n`;
+    }
+
+    markdown += `\n`;
   });
 
   if (hasMore) {
@@ -561,10 +578,9 @@ export function formatResponse(
       return formatAgentMarkdown(data as Agent);
 
     case "agent_list": {
-      const paginated = data as PaginatedResponse<Agent>;
+      const paginated = data as PaginatedResponse<AgentListItem>;
       return formatAgentListMarkdown(
         paginated.items,
-        paginated.total,
         paginated.offset,
         paginated.has_more
       );
