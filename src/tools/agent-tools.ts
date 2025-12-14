@@ -28,8 +28,8 @@ This tool creates a complete voice agent with conversation settings, including t
 Args:
   - name (string): Display name for the agent (max 100 chars)
   - prompt (string): System prompt defining behavior (10-5000 chars)
-  - llm (string): AI model identifier to use (default: "claude-sonnet-4-5-20250929")
-    Common options: claude-sonnet-4-5-20250929, claude-sonnet-4-20250514, gpt-4o, gpt-4o-mini, gemini-2.0-flash-exp
+  - llm (string): AI model identifier to use (default: "claude-sonnet-4-5@20250929")
+    Common options: claude-sonnet-4-5@20250929, claude-sonnet-4@20250514, gpt-4o, gpt-4o-mini, gemini-2.0-flash-exp
     Any valid ElevenLabs model identifier is accepted (new models may be available)
   - voice_id (string): ElevenLabs voice ID (default: "21m00Tcm4TlvDq8ikWAM" - Rachel)
   - voice_model (string): Voice synthesis model (default: "eleven_turbo_v2_5")
@@ -95,6 +95,16 @@ Error Handling:
           model_id: parsed.voice_model,
           ...(parsed.stability !== undefined && { stability: parsed.stability }),
           ...(parsed.similarity_boost !== undefined && { similarity_boost: parsed.similarity_boost })
+        },
+        // ASR (Automatic Speech Recognition) configuration - required by ElevenLabs API
+        asr: {
+          provider: "elevenlabs",
+          user_input_audio_format: "pcm_16000"
+        },
+        // Turn-taking configuration - required by ElevenLabs API
+        turn: {
+          turn_timeout: 10,
+          silence_end_call_timeout: 15
         }
       },
       ...(parsed.widget_color || parsed.widget_avatar_url ? {

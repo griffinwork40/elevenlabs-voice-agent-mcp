@@ -13,20 +13,29 @@ export const DEFAULT_LIMIT = 20;
 export const MAX_LIMIT = 100;
 
 // Default configuration values
-export const DEFAULT_LLM = "claude-sonnet-4-5-20250929"; // Claude Sonnet 4.5
-export const DEFAULT_VOICE_MODEL = "eleven_turbo_v2_5"; // Turbo v2.5 supports 32 languages with high quality
+export const DEFAULT_LLM = "claude-sonnet-4-5@20250929"; // Claude Sonnet 4.5 (using @ date format)
+export const DEFAULT_VOICE_MODEL = "eleven_turbo_v2"; // Turbo v2 for English agents
 export const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Rachel voice
 export const DEFAULT_LANGUAGE = "en";
 
 // Common LLM models (examples - any valid ElevenLabs model identifier is accepted)
 // These are provided as defaults/examples; ElevenLabs may add new models that work without code changes
+// Note: Use @ format for versioned models (e.g., claude-sonnet-4-5@20250929)
 export const SUPPORTED_LLMS = [
   "gpt-4o",
   "gpt-4o-mini",
-  "claude-sonnet-4-5-20250929",
-  "claude-sonnet-4-20250514",
-  "claude-3-5-sonnet-20241022",
-  "claude-3-5-haiku-20241022",
+  "claude-sonnet-4-5",
+  "claude-sonnet-4-5@20250929",
+  "claude-sonnet-4",
+  "claude-sonnet-4@20250514",
+  "claude-haiku-4-5",
+  "claude-haiku-4-5@20251001",
+  "claude-3-5-sonnet",
+  "claude-3-5-sonnet@20240620",
+  "claude-3-5-sonnet-v2@20241022",
+  "claude-3-haiku",
+  "claude-3-haiku@20240307",
+  "gemini-2.0-flash",
   "gemini-2.0-flash-exp"
 ] as const;
 
