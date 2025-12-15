@@ -201,6 +201,10 @@ Args:
   - max_tokens (number): Updated max tokens (1-4096)
   - stability (number): Updated voice stability (0-1)
   - similarity_boost (number): Updated similarity boost (0-1)
+  - speed (number): Speech rate 0.5-2.0 (default 1.0)
+  - turn_eagerness ('patient' | 'normal' | 'eager'): How quickly agent responds
+  - turn_timeout (number): Seconds to wait for user response (1-30)
+  - silence_end_call_timeout (number): Seconds of silence before ending call (1-600)
   - widget_color (string): Updated widget color
   - widget_avatar_url (string): Updated widget avatar URL
   - response_format ('markdown' | 'json'): Output format
@@ -212,6 +216,8 @@ Examples:
   - Use when: "Change the agent's voice to voice ID xyz123"
   - Use when: "Update the system prompt to be more friendly"
   - Use when: "Switch the agent to use Claude instead of GPT"
+  - Use when: "Make the agent respond faster with turn_eagerness: 'eager'"
+  - Use when: "Slow down the speech rate to 0.8"
   - Don't use when: You want to create a new agent (use elevenlabs_create_agent)
 
 Error Handling:
@@ -276,13 +282,27 @@ Error Handling:
 
     // TTS updates
     if (parsed.voice_id !== undefined || parsed.voice_model !== undefined ||
-        parsed.stability !== undefined || parsed.similarity_boost !== undefined) {
+        parsed.stability !== undefined || parsed.similarity_boost !== undefined ||
+        parsed.speed !== undefined) {
       conversationConfigUpdates.tts = {
         ...(conversationConfigUpdates.tts as Record<string, unknown>),
         ...(parsed.voice_id !== undefined && { voice_id: parsed.voice_id }),
         ...(parsed.voice_model !== undefined && { model_id: parsed.voice_model }),
         ...(parsed.stability !== undefined && { stability: parsed.stability }),
-        ...(parsed.similarity_boost !== undefined && { similarity_boost: parsed.similarity_boost })
+        ...(parsed.similarity_boost !== undefined && { similarity_boost: parsed.similarity_boost }),
+        ...(parsed.speed !== undefined && { speed: parsed.speed })
+      };
+      hasConversationConfigChanges = true;
+    }
+
+    // Turn configuration updates
+    if (parsed.turn_eagerness !== undefined || parsed.turn_timeout !== undefined ||
+        parsed.silence_end_call_timeout !== undefined) {
+      conversationConfigUpdates.turn = {
+        ...(currentAgent.conversation_config.turn || {}),
+        ...(parsed.turn_eagerness !== undefined && { turn_eagerness: parsed.turn_eagerness }),
+        ...(parsed.turn_timeout !== undefined && { turn_timeout: parsed.turn_timeout }),
+        ...(parsed.silence_end_call_timeout !== undefined && { silence_end_call_timeout: parsed.silence_end_call_timeout })
       };
       hasConversationConfigChanges = true;
     }

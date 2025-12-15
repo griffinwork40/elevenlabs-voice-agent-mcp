@@ -169,6 +169,28 @@ export const UpdateAgentSchema = z.object({
     .optional()
     .describe("Updated similarity boost"),
 
+  speed: z.number()
+    .min(0.5)
+    .max(2.0)
+    .optional()
+    .describe("Speech rate (0.5-2.0, default 1.0)"),
+
+  turn_eagerness: z.enum(['patient', 'normal', 'eager'])
+    .optional()
+    .describe("How quickly agent responds to user"),
+
+  turn_timeout: z.number()
+    .min(1)
+    .max(30)
+    .optional()
+    .describe("Seconds to wait for user response (1-30)"),
+
+  silence_end_call_timeout: z.number()
+    .min(1)
+    .max(600)
+    .optional()
+    .describe("Seconds of silence before ending call (1-600)"),
+
   widget_color: ColorSchema.optional().describe("Updated widget color"),
 
   widget_avatar_url: URLSchema.optional().describe("Updated widget avatar URL"),

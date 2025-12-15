@@ -34,6 +34,13 @@ export interface TTSConfig {
   optimize_streaming_latency?: number;
   stability?: number;
   similarity_boost?: number;
+  speed?: number;
+}
+
+export interface TurnConfig {
+  turn_eagerness?: 'patient' | 'normal' | 'eager';
+  turn_timeout?: number;
+  silence_end_call_timeout?: number;
 }
 
 export interface ASRConfig {
@@ -49,6 +56,7 @@ export interface ConversationConfig {
   };
   tts: TTSConfig;
   asr?: ASRConfig;
+  turn?: TurnConfig;
 }
 
 export interface PlatformSettings {
