@@ -6,7 +6,8 @@
 
 import { getRequest } from "../services/elevenlabs-api.js";
 import { formatResponse } from "../services/formatters.js";
-import { ConversationMetadata, PaginatedResponse } from "../types.js";
+import { createTextResponse } from "../utils/response.js";
+import { ConversationMetadata, PaginatedResponse, MCPToolDefinition } from "../types.js";
 import {
   GetConversationSchema,
   ListConversationsSchema
@@ -15,7 +16,7 @@ import {
 /**
  * Retrieves a single conversation with full transcript
  */
-export const elevenlabs_get_conversation = {
+export const elevenlabs_get_conversation: MCPToolDefinition<typeof GetConversationSchema> = {
   name: "elevenlabs_get_conversation",
   description: `Retrieve complete details and transcript for a specific conversation.
 
@@ -58,21 +59,14 @@ Error Handling:
       `/convai/conversations/${parsed.conversation_id}`
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(conversation, parsed.response_format, "conversation")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(conversation, parsed.response_format, "conversation"));
   }
 };
 
 /**
  * Lists conversations with filtering and pagination
  */
-export const elevenlabs_list_conversations = {
+export const elevenlabs_list_conversations: MCPToolDefinition<typeof ListConversationsSchema> = {
   name: "elevenlabs_list_conversations",
   description: `List conversations with optional filtering by agent, status, and date range.
 
@@ -155,13 +149,6 @@ Error Handling:
       next_offset: hasMore ? parsed.offset + conversations.length : undefined
     };
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(paginatedResponse, parsed.response_format, "conversation_list")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(paginatedResponse, parsed.response_format, "conversation_list"));
   }
 };

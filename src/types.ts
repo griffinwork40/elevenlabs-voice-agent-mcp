@@ -4,6 +4,7 @@
  * Defines interfaces for agents, conversations, tools, and API responses.
  */
 
+import { z } from "zod";
 import { SUPPORTED_LLMS, SUPPORTED_VOICE_MODELS, SUPPORTED_LANGUAGES, AUTH_TYPES } from "./constants.js";
 
 // Enums
@@ -339,4 +340,57 @@ export interface ImportPhoneNumberRequest {
 
 export interface ImportPhoneNumberResponse {
   phone_number_id: string;
+}
+
+// MCP Tool Definitions
+
+/**
+ * Text content returned by MCP tool handlers
+ */
+export interface MCPTextContent {
+  type: "text";
+  text: string;
+}
+
+/**
+ * Standard response structure for MCP tool handlers
+ *
+ * The index signature allows for extensibility as required by the MCP SDK
+ */
+export interface MCPToolResponse {
+  [key: string]: unknown;
+  content: MCPTextContent[];
+}
+
+/**
+ * Annotations for MCP tools describing their behavior
+ */
+export interface MCPToolAnnotations {
+  /** Tool only reads data, does not modify state */
+  readOnlyHint?: boolean;
+  /** Tool performs destructive/irreversible operations */
+  destructiveHint?: boolean;
+  /** Tool can be called multiple times with same result */
+  idempotentHint?: boolean;
+  /** Tool interacts with external services */
+  openWorldHint?: boolean;
+}
+
+/**
+ * Type-safe definition for MCP tools
+ *
+ * This interface ensures all tools follow a consistent structure
+ * with proper typing for registration with the MCP server.
+ */
+export interface MCPToolDefinition<T extends z.ZodSchema = z.ZodSchema> {
+  /** Unique tool identifier (e.g., "elevenlabs_create_agent") */
+  name: string;
+  /** Comprehensive description of tool functionality */
+  description: string;
+  /** Zod schema for input validation */
+  zodSchema: T;
+  /** Optional behavioral annotations */
+  annotations?: MCPToolAnnotations;
+  /** Async handler function that executes the tool */
+  handler: (args: unknown) => Promise<MCPToolResponse>;
 }
