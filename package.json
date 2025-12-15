@@ -35,11 +35,12 @@
     "build": "tsc && chmod +x dist/index.js",
     "clean": "rm -rf dist",
     "test": "npm run test:all",
-    "test:all": "npm run test:startup && npm run test:api && npm run test:mcp && npm run test:tools",
+    "test:all": "npm run test:startup && npm run test:api && npm run test:mcp && npm run test:tools && npm run test:schemas",
     "test:startup": "tsx test/test-server-startup.ts",
     "test:api": "tsx test/test-api-connection.ts",
     "test:mcp": "tsx test/mcp-client-test.ts",
     "test:tools": "tsx test/test-tools.ts",
+    "test:schemas": "tsx test/test-agent-config.ts",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "engines": {

@@ -146,7 +146,7 @@ When adding new tools:
 5. Rebuild with `npm run build`
 
 ### Constants and Defaults
-- Default LLM: `claude-sonnet-4-5-20250929` (Claude Sonnet 4.5)
+- Default LLM: `claude-sonnet-4-5@20250929` (Claude Sonnet 4.5)
 - Default voice model: `eleven_turbo_v2_5` (supports 32 languages with high quality)
 - Supported voice models:
   - `eleven_flash_v2` (English only, low latency)

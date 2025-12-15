@@ -14,9 +14,21 @@ export const MAX_LIMIT = 100;
 
 // Default configuration values
 export const DEFAULT_LLM = "claude-sonnet-4-5@20250929"; // Claude Sonnet 4.5 (using @ date format)
-export const DEFAULT_VOICE_MODEL = "eleven_turbo_v2"; // Turbo v2 for English agents
+export const DEFAULT_VOICE_MODEL = "eleven_turbo_v2_5"; // Turbo v2.5 (multilingual, higher quality)
 export const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Rachel voice
 export const DEFAULT_LANGUAGE = "en";
+
+// Default ASR (Automatic Speech Recognition) configuration required by the API
+export const DEFAULT_ASR_CONFIG = {
+  provider: "elevenlabs",
+  user_input_audio_format: "pcm_16000"
+} as const;
+
+// Default turn-taking configuration required by the API
+export const DEFAULT_TURN_CONFIG = {
+  turn_timeout: 10,
+  silence_end_call_timeout: 15
+} as const;
 
 // Common LLM models (examples - any valid ElevenLabs model identifier is accepted)
 // These are provided as defaults/examples; ElevenLabs may add new models that work without code changes

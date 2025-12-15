@@ -12,7 +12,9 @@ import {
   DEFAULT_LLM,
   DEFAULT_VOICE_MODEL,
   DEFAULT_VOICE_ID,
-  DEFAULT_LANGUAGE
+  DEFAULT_LANGUAGE,
+  DEFAULT_ASR_CONFIG,
+  DEFAULT_TURN_CONFIG
 } from "../constants.js";
 import {
   ResponseFormatSchema,
@@ -23,6 +25,24 @@ import {
   ColorSchema,
   URLSchema
 } from "./common-schemas.js";
+
+const AsrConfigSchema = z.object({
+  provider: z.string()
+    .min(1, "ASR provider is required")
+    .describe("ASR provider identifier (default: elevenlabs)"),
+  user_input_audio_format: z.string()
+    .min(1, "ASR audio format is required")
+    .describe("Audio format for user input (e.g., pcm_16000)")
+}).partial().default(DEFAULT_ASR_CONFIG);
+
+const TurnConfigSchema = z.object({
+  turn_timeout: z.number()
+    .positive("Turn timeout must be greater than 0")
+    .describe("Time in seconds before a turn times out"),
+  silence_end_call_timeout: z.number()
+    .positive("Silence end call timeout must be greater than 0")
+    .describe("Time in seconds of silence before ending a call")
+}).partial().default(DEFAULT_TURN_CONFIG);
 
 /**
  * Schema for creating a new agent
@@ -92,6 +112,10 @@ export const CreateAgentSchema = z.object({
   widget_color: ColorSchema.optional().describe("Widget theme color"),
 
   widget_avatar_url: URLSchema.optional().describe("Widget avatar image URL"),
+
+  asr: AsrConfigSchema.describe("ASR configuration; defaults to ElevenLabs PCM 16k if not provided"),
+
+  turn: TurnConfigSchema.describe("Turn-taking configuration with sensible defaults"),
 
   response_format: ResponseFormatSchema
 }).passthrough();
@@ -172,6 +196,10 @@ export const UpdateAgentSchema = z.object({
   widget_color: ColorSchema.optional().describe("Updated widget color"),
 
   widget_avatar_url: URLSchema.optional().describe("Updated widget avatar URL"),
+
+  asr: AsrConfigSchema.optional().describe("Updated ASR configuration"),
+
+  turn: TurnConfigSchema.optional().describe("Updated turn-taking configuration"),
 
   response_format: ResponseFormatSchema
 }).passthrough();

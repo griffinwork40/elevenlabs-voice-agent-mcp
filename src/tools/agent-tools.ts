@@ -15,6 +15,7 @@ import {
   DeleteAgentSchema,
   ListAgentsSchema
 } from "../schemas/agent-schemas.js";
+import { DEFAULT_ASR_CONFIG, DEFAULT_TURN_CONFIG } from "../constants.js";
 
 /**
  * Creates a new ElevenLabs Voice Agent
@@ -28,8 +29,8 @@ This tool creates a complete voice agent with conversation settings, including t
 Args:
   - name (string): Display name for the agent (max 100 chars)
   - prompt (string): System prompt defining behavior (10-5000 chars)
-  - llm (string): AI model identifier to use (default: "claude-sonnet-4-5-20250929")
-    Common options: claude-sonnet-4-5-20250929, claude-sonnet-4-20250514, gpt-4o, gpt-4o-mini, gemini-2.0-flash-exp
+  - llm (string): AI model identifier to use (default: "claude-sonnet-4-5@20250929")
+    Common options: claude-sonnet-4-5@20250929, claude-sonnet-4@20250514, gpt-4o, gpt-4o-mini, gemini-2.0-flash-exp
     Any valid ElevenLabs model identifier is accepted (new models may be available)
   - voice_id (string): ElevenLabs voice ID (default: "21m00Tcm4TlvDq8ikWAM" - Rachel)
   - voice_model (string): Voice synthesis model (default: "eleven_turbo_v2_5")
@@ -45,6 +46,8 @@ Args:
   - max_tokens (number): Maximum tokens for LLM responses (1-4096)
   - stability (number): Voice stability 0-1 (higher = more consistent)
   - similarity_boost (number): Voice similarity boost 0-1 (higher = closer to original)
+  - asr (object): Optional ASR config (provider, user_input_audio_format). Defaults to provider="elevenlabs", format="pcm_16000"
+  - turn (object): Optional turn-taking config (turn_timeout, silence_end_call_timeout). Defaults to 10s/15s
   - widget_color (string): Widget theme color in hex format (e.g., "#FF5733")
   - widget_avatar_url (string): Widget avatar image URL
   - response_format ('markdown' | 'json'): Output format
@@ -77,6 +80,16 @@ Error Handling:
     const parsed = CreateAgentSchema.parse(args);
 
     // Build agent configuration
+    const asrConfig = {
+      provider: parsed.asr?.provider ?? DEFAULT_ASR_CONFIG.provider,
+      user_input_audio_format: parsed.asr?.user_input_audio_format ?? DEFAULT_ASR_CONFIG.user_input_audio_format
+    };
+
+    const turnConfig = {
+      turn_timeout: parsed.turn?.turn_timeout ?? DEFAULT_TURN_CONFIG.turn_timeout,
+      silence_end_call_timeout: parsed.turn?.silence_end_call_timeout ?? DEFAULT_TURN_CONFIG.silence_end_call_timeout
+    };
+
     const agentData = {
       name: parsed.name,
       conversation_config: {
@@ -97,15 +110,9 @@ Error Handling:
           ...(parsed.similarity_boost !== undefined && { similarity_boost: parsed.similarity_boost })
         },
         // ASR (Automatic Speech Recognition) configuration - required by ElevenLabs API
-        asr: {
-          provider: "elevenlabs",
-          user_input_audio_format: "pcm_16000"
-        },
+        asr: asrConfig,
         // Turn-taking configuration - required by ElevenLabs API
-        turn: {
-          turn_timeout: 10,
-          silence_end_call_timeout: 15
-        }
+        turn: turnConfig
       },
       ...(parsed.widget_color || parsed.widget_avatar_url ? {
         platform_settings: {
@@ -201,6 +208,8 @@ Args:
   - max_tokens (number): Updated max tokens (1-4096)
   - stability (number): Updated voice stability (0-1)
   - similarity_boost (number): Updated similarity boost (0-1)
+  - asr (object): Updated ASR config
+  - turn (object): Updated turn-taking config
   - widget_color (string): Updated widget color
   - widget_avatar_url (string): Updated widget avatar URL
   - response_format ('markdown' | 'json'): Output format
@@ -243,7 +252,9 @@ Error Handling:
     // Build conversation config updates
     const conversationConfigUpdates: Record<string, unknown> = {
       agent: { ...currentAgent.conversation_config.agent } as Record<string, unknown>,
-      tts: { ...currentAgent.conversation_config.tts } as Record<string, unknown>
+      tts: { ...currentAgent.conversation_config.tts } as Record<string, unknown>,
+      asr: { ...(currentAgent.conversation_config as Record<string, unknown>).asr } as Record<string, unknown>,
+      turn: { ...(currentAgent.conversation_config as Record<string, unknown>).turn } as Record<string, unknown>
     };
 
     let hasConversationConfigChanges = false;
@@ -283,6 +294,26 @@ Error Handling:
         ...(parsed.voice_model !== undefined && { model_id: parsed.voice_model }),
         ...(parsed.stability !== undefined && { stability: parsed.stability }),
         ...(parsed.similarity_boost !== undefined && { similarity_boost: parsed.similarity_boost })
+      };
+      hasConversationConfigChanges = true;
+    }
+
+    // ASR updates
+    if (parsed.asr?.provider !== undefined || parsed.asr?.user_input_audio_format !== undefined) {
+      conversationConfigUpdates.asr = {
+        ...(conversationConfigUpdates.asr as Record<string, unknown>),
+        ...(parsed.asr?.provider !== undefined && { provider: parsed.asr.provider }),
+        ...(parsed.asr?.user_input_audio_format !== undefined && { user_input_audio_format: parsed.asr.user_input_audio_format })
+      };
+      hasConversationConfigChanges = true;
+    }
+
+    // Turn-taking updates
+    if (parsed.turn?.turn_timeout !== undefined || parsed.turn?.silence_end_call_timeout !== undefined) {
+      conversationConfigUpdates.turn = {
+        ...(conversationConfigUpdates.turn as Record<string, unknown>),
+        ...(parsed.turn?.turn_timeout !== undefined && { turn_timeout: parsed.turn.turn_timeout }),
+        ...(parsed.turn?.silence_end_call_timeout !== undefined && { silence_end_call_timeout: parsed.turn.silence_end_call_timeout })
       };
       hasConversationConfigChanges = true;
     }
