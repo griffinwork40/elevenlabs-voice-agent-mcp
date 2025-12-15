@@ -45,6 +45,10 @@ Args:
   - max_tokens (number): Maximum tokens for LLM responses (1-4096)
   - stability (number): Voice stability 0-1 (higher = more consistent)
   - similarity_boost (number): Voice similarity boost 0-1 (higher = closer to original)
+  - speed (number): Speech rate 0.5-2.0 (default 1.0)
+  - turn_eagerness ('patient' | 'normal' | 'eager'): How quickly agent responds (default: normal)
+  - turn_timeout (number): Seconds to wait for user response 1-30 (default: 10)
+  - silence_end_call_timeout (number): Seconds of silence before ending call 1-600 (default: 15)
   - widget_color (string): Widget theme color in hex format (e.g., "#FF5733")
   - widget_avatar_url (string): Widget avatar image URL
   - response_format ('markdown' | 'json'): Output format
@@ -56,6 +60,7 @@ Returns:
 Examples:
   - Use when: "Create a customer service agent for tech support"
   - Use when: "Set up a voice agent for appointment scheduling"
+  - Use when: "Create a fast-responding agent with turn_eagerness: 'eager'"
   - Don't use when: You want to test an existing agent (use elevenlabs_generate_widget_code)
   - Don't use when: You want to modify an agent (use elevenlabs_update_agent)
 
@@ -94,7 +99,8 @@ Error Handling:
           voice_id: parsed.voice_id,
           model_id: parsed.voice_model,
           ...(parsed.stability !== undefined && { stability: parsed.stability }),
-          ...(parsed.similarity_boost !== undefined && { similarity_boost: parsed.similarity_boost })
+          ...(parsed.similarity_boost !== undefined && { similarity_boost: parsed.similarity_boost }),
+          ...(parsed.speed !== undefined && { speed: parsed.speed })
         },
         // ASR (Automatic Speech Recognition) configuration - required by ElevenLabs API
         asr: {
@@ -103,8 +109,9 @@ Error Handling:
         },
         // Turn-taking configuration - required by ElevenLabs API
         turn: {
-          turn_timeout: 10,
-          silence_end_call_timeout: 15
+          turn_timeout: parsed.turn_timeout ?? 10,
+          silence_end_call_timeout: parsed.silence_end_call_timeout ?? 15,
+          ...(parsed.turn_eagerness !== undefined && { turn_eagerness: parsed.turn_eagerness })
         }
       },
       ...(parsed.widget_color || parsed.widget_avatar_url ? {
