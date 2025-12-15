@@ -302,11 +302,16 @@ Error Handling:
       hasConversationConfigChanges = true;
     }
 
-    // Turn configuration updates
+    // Turn configuration updates - only spread known fields to avoid including undocumented API fields
     if (parsed.turn_eagerness !== undefined || parsed.turn_timeout !== undefined ||
         parsed.silence_end_call_timeout !== undefined) {
+      const currentTurn = currentAgent.conversation_config.turn;
       conversationConfigUpdates.turn = {
-        ...(currentAgent.conversation_config.turn || {}),
+        // Preserve known current values with defaults
+        turn_timeout: currentTurn?.turn_timeout ?? 10,
+        silence_end_call_timeout: currentTurn?.silence_end_call_timeout ?? 15,
+        ...(currentTurn?.turn_eagerness && { turn_eagerness: currentTurn.turn_eagerness }),
+        // Apply user updates (these override current values)
         ...(parsed.turn_eagerness !== undefined && { turn_eagerness: parsed.turn_eagerness }),
         ...(parsed.turn_timeout !== undefined && { turn_timeout: parsed.turn_timeout }),
         ...(parsed.silence_end_call_timeout !== undefined && { silence_end_call_timeout: parsed.silence_end_call_timeout })

@@ -37,9 +37,15 @@ export interface TTSConfig {
   speed?: number;
 }
 
+/**
+ * Turn-taking configuration for voice agent conversations
+ */
 export interface TurnConfig {
+  /** Controls how quickly the agent interrupts or waits for user pauses */
   turn_eagerness?: 'patient' | 'normal' | 'eager';
+  /** Maximum seconds to wait for user to continue speaking before agent responds (1-30) */
   turn_timeout?: number;
+  /** Seconds of complete silence before automatically ending the call (1-600) */
   silence_end_call_timeout?: number;
 }
 

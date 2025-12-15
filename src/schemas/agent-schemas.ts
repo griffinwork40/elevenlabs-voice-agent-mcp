@@ -173,27 +173,27 @@ export const UpdateAgentSchema = z.object({
     .describe("Updated temperature"),
 
   max_tokens: z.number()
-    .int()
-    .min(1)
-    .max(4096)
+    .int("Max tokens must be an integer")
+    .min(1, "Max tokens must be at least 1")
+    .max(4096, "Max tokens must not exceed 4096")
     .optional()
     .describe("Updated max tokens"),
 
   stability: z.number()
-    .min(0)
-    .max(1)
+    .min(0, "Stability must be between 0 and 1")
+    .max(1, "Stability must be between 0 and 1")
     .optional()
     .describe("Updated voice stability"),
 
   similarity_boost: z.number()
-    .min(0)
-    .max(1)
+    .min(0, "Similarity boost must be between 0 and 1")
+    .max(1, "Similarity boost must be between 0 and 1")
     .optional()
     .describe("Updated similarity boost"),
 
   speed: z.number()
-    .min(0.5)
-    .max(2.0)
+    .min(0.5, "Speed must be between 0.5 and 2.0")
+    .max(2.0, "Speed must be between 0.5 and 2.0")
     .optional()
     .describe("Speech rate (0.5-2.0, default 1.0)"),
 
@@ -202,14 +202,14 @@ export const UpdateAgentSchema = z.object({
     .describe("How quickly agent responds to user"),
 
   turn_timeout: z.number()
-    .min(1)
-    .max(30)
+    .min(1, "Turn timeout must be between 1 and 30")
+    .max(30, "Turn timeout must be between 1 and 30")
     .optional()
     .describe("Seconds to wait for user response (1-30)"),
 
   silence_end_call_timeout: z.number()
-    .min(1)
-    .max(600)
+    .min(1, "Silence timeout must be between 1 and 600")
+    .max(600, "Silence timeout must be between 1 and 600")
     .optional()
     .describe("Seconds of silence before ending call (1-600)"),
 
