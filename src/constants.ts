@@ -14,7 +14,7 @@ export const MAX_LIMIT = 100;
 
 // Default configuration values
 export const DEFAULT_LLM = "claude-sonnet-4-5@20250929"; // Claude Sonnet 4.5 (using @ date format)
-export const DEFAULT_VOICE_MODEL = "eleven_turbo_v2"; // Turbo v2 for English agents
+export const DEFAULT_VOICE_MODEL = "eleven_turbo_v2_5"; // Turbo v2.5 for 32 languages support
 export const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Rachel voice
 export const DEFAULT_LANGUAGE = "en";
 
