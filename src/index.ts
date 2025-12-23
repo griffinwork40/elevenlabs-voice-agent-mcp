@@ -17,7 +17,7 @@ import {
   elevenlabs_update_agent,
   elevenlabs_delete_agent,
   elevenlabs_list_agents
-} from "./tools/agent-tools.js";
+} from "./tools/agents/index.js";
 
 import { elevenlabs_add_knowledge_base } from "./tools/knowledge-tools.js";
 
