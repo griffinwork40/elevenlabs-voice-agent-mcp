@@ -1,7 +1,9 @@
 /**
- * Agent management tools
- *
- * MCP tools for creating, retrieving, updating, deleting, and listing voice agents.
+ * @fileoverview Agent management tools for ElevenLabs Voice Agents
+ * @description MCP tools for creating, retrieving, updating, deleting, and listing voice agents.
+ * These tools provide full CRUD operations for managing voice agent configurations through
+ * the ElevenLabs Conversational AI API.
+ * @module tools/agent-tools
  */
 
 import { z } from "zod";

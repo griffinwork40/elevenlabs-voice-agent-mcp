@@ -1,7 +1,9 @@
 /**
- * Knowledge base management tools
- *
- * MCP tools for adding documents and URLs to agent knowledge bases.
+ * @fileoverview Knowledge base management tools for ElevenLabs Voice Agents
+ * @description MCP tools for adding documents and URLs to agent knowledge bases.
+ * Knowledge bases enable agents to reference custom information when responding
+ * to users during conversations.
+ * @module tools/knowledge-tools
  */
 
 import { postRequest } from "../services/elevenlabs-api.js";

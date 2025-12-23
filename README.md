@@ -490,6 +490,66 @@ The MCP server accepts any valid ElevenLabs model identifier. Common options inc
 
 `en`, `es`, `fr`, `de`, `it`, `pt`, `pl`, `nl`, `ja`, `zh`, `ko`, `ar`, `hi`
 
+## API Reference
+
+Complete reference for all 23 MCP tools organized by functionality.
+
+### Tier 1: Core Agent Management
+
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `elevenlabs_create_agent` | Create a new voice agent | `name`, `prompt`, `llm`, `voice_id`, `first_message`, `language` |
+| `elevenlabs_get_agent` | Retrieve agent configuration | `agent_id` |
+| `elevenlabs_update_agent` | Modify agent settings | `agent_id`, plus any fields to update |
+| `elevenlabs_delete_agent` | Permanently delete an agent | `agent_id` |
+| `elevenlabs_list_agents` | List all agents with pagination | `limit`, `offset` |
+
+### Tier 2: Knowledge Base & Tools
+
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `elevenlabs_add_knowledge_base` | Add documents to agent knowledge | `agent_id`, `documents[]` |
+| `elevenlabs_create_webhook_tool` | Create webhook integration | `agent_id`, `name`, `url`, `method`, `parameters[]` |
+| `elevenlabs_list_tools` | List agent's webhook tools | `agent_id` |
+| `elevenlabs_delete_tool` | Remove a webhook tool | `agent_id`, `tool_name` |
+
+### Tier 3: Testing & Monitoring
+
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `elevenlabs_get_conversation` | Get conversation transcript | `conversation_id` |
+| `elevenlabs_list_conversations` | List conversations with filtering | `agent_id`, `status`, `limit`, `offset` |
+| `elevenlabs_generate_widget_code` | Generate HTML embed code | `agent_id`, `color`, `avatar_url` |
+
+### Tier 4: Utilities
+
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `elevenlabs_list_voices` | Browse available voices | `language`, `gender`, `age`, `limit` |
+
+### Tier 5: Outbound Calling & Phone Management
+
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `elevenlabs_start_outbound_call` | Initiate single call | `agent_id`, `agent_phone_number_id`, `to_number` |
+| `elevenlabs_submit_batch_call` | Submit batch calling job | `call_name`, `agent_id`, `recipients[]` |
+| `elevenlabs_list_batch_calls` | List batch jobs | `limit`, `last_doc` |
+| `elevenlabs_get_batch_call` | Get batch details | `batch_id` |
+| `elevenlabs_list_phone_numbers` | List connected phone numbers | - |
+| `elevenlabs_get_phone_number` | Get phone number details | `phone_number_id` |
+| `elevenlabs_import_phone_number` | Import Twilio number | `phone_number`, `label`, `sid`, `token` |
+| `elevenlabs_update_phone_number` | Assign agent to number | `phone_number_id`, `agent_id` |
+| `elevenlabs_delete_phone_number` | Remove phone number | `phone_number_id` |
+
+### Tool Annotations
+
+All tools include MCP annotations for client guidance:
+
+- `readOnlyHint`: Whether the tool only reads data (no side effects)
+- `destructiveHint`: Whether the tool performs destructive actions (delete)
+- `idempotentHint`: Whether repeated calls have the same effect
+- `openWorldHint`: Whether the tool interacts with external systems
+
 ## Development
 
 ### Project Structure
@@ -497,42 +557,101 @@ The MCP server accepts any valid ElevenLabs model identifier. Common options inc
 ```
 elevenlabs-voice-agent-mcp/
 ├── src/
-│   ├── index.ts                 # Server initialization
-│   ├── types.ts                 # TypeScript interfaces
-│   ├── constants.ts             # API URLs and defaults
+│   ├── index.ts                 # Server initialization & tool registration
+│   ├── types.ts                 # TypeScript interfaces for all entities
+│   ├── constants.ts             # API URLs, limits, and defaults
 │   ├── schemas/                 # Zod validation schemas
-│   │   ├── agent-schemas.ts
-│   │   ├── tool-schemas.ts
+│   │   ├── agent-schemas.ts     # Agent CRUD schemas
+│   │   ├── tool-schemas.ts      # Webhook tool & knowledge base schemas
 │   │   ├── conversation-schemas.ts
-│   │   └── common-schemas.ts
+│   │   ├── outbound-schemas.ts  # Single call schemas
+│   │   ├── batch-calling-schemas.ts
+│   │   ├── phone-number-schemas.ts
+│   │   └── common-schemas.ts    # Shared schemas (pagination, etc.)
 │   ├── services/                # API clients and utilities
-│   │   ├── elevenlabs-api.ts
-│   │   └── formatters.ts
+│   │   ├── elevenlabs-api.ts    # HTTP client with auth
+│   │   └── formatters.ts        # Response formatting (Markdown/JSON)
 │   ├── tools/                   # MCP tool implementations
-│   │   ├── agent-tools.ts
-│   │   ├── knowledge-tools.ts
-│   │   ├── tool-tools.ts
+│   │   ├── agent-tools.ts       # CRUD for agents
+│   │   ├── knowledge-tools.ts   # Knowledge base management
+│   │   ├── tool-tools.ts        # Webhook tool management
 │   │   ├── conversation-tools.ts
-│   │   └── utility-tools.ts
+│   │   ├── utility-tools.ts     # Voices, widgets
+│   │   ├── outbound-tools.ts    # Single outbound calls
+│   │   ├── batch-calling-tools.ts
+│   │   └── phone-number-tools.ts
 │   └── utils/                   # Helper functions
-│       ├── error-handlers.ts
-│       └── truncation.ts
-└── dist/                        # Compiled JavaScript
+│       ├── error-handlers.ts    # Error parsing & messages
+│       ├── truncation.ts        # Response size management
+│       └── phone-normalizer.ts  # E.164 format conversion
+├── dist/                        # Compiled JavaScript (gitignored)
+├── test/                        # Test files
+└── CLAUDE.md                    # AI assistant guidance
 ```
 
 ### Scripts
 
-- `npm run build` - Compile TypeScript to JavaScript
-- `npm run dev` - Run in watch mode with auto-reload
-- `npm start` - Run the compiled server
-- `npm run clean` - Remove build artifacts
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Compile TypeScript to JavaScript in `dist/` |
+| `npm run dev` | Run with auto-reload using `tsx watch` |
+| `npm start` | Run compiled server from `dist/` |
+| `npm run clean` | Remove build artifacts |
+| `npm test` | Run tests (placeholder) |
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ELEVENLABS_API_KEY` | Yes | Your ElevenLabs API key |
 
 ### Adding New Tools
 
-1. Create tool definition in appropriate file under `src/tools/`
-2. Add Zod schema in `src/schemas/`
-3. Register tool in `src/index.ts`
-4. Rebuild with `npm run build`
+1. **Create schema** in `src/schemas/`:
+   ```typescript
+   export const MyToolSchema = z.object({
+     param: z.string().describe("Parameter description"),
+     response_format: ResponseFormatSchema
+   }).passthrough();
+   ```
+
+2. **Create tool definition** in `src/tools/`:
+   ```typescript
+   export const elevenlabs_my_tool = {
+     name: "elevenlabs_my_tool",
+     description: `Tool description with examples...`,
+     zodSchema: MyToolSchema,
+     annotations: { readOnlyHint: true, ... },
+     handler: async (args: unknown) => {
+       const parsed = MyToolSchema.parse(args);
+       // Implementation
+       return { content: [{ type: "text", text: result }] };
+     }
+   };
+   ```
+
+3. **Register in `src/index.ts`**:
+   ```typescript
+   import { elevenlabs_my_tool } from "./tools/my-tools.js";
+   // Add to tools array
+   ```
+
+4. **Rebuild**: `npm run build`
+
+### Code Style
+
+- TypeScript strict mode enabled
+- ESM modules with `.js` extension in imports
+- Zod schemas for runtime validation
+- Consistent error handling via `handleElevenLabsError`
+- Response formatting supports both Markdown and JSON
+
+### Testing Locally
+
+1. Build the project: `npm run build`
+2. Set API key: `export ELEVENLABS_API_KEY=your_key`
+3. Test with MCP inspector or Claude Desktop
+4. Check server output on stderr for diagnostics
 
 ## Error Handling
 

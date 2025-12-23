@@ -1,7 +1,8 @@
 /**
- * Zod validation schemas for agent-related operations
- *
- * Provides strict input validation for creating, updating, and managing agents.
+ * @fileoverview Zod validation schemas for agent-related operations
+ * @description Provides strict input validation for creating, updating, and managing agents.
+ * These schemas define the expected input structure for agent CRUD operations.
+ * @module schemas/agent-schemas
  */
 
 import { z } from "zod";
@@ -25,7 +26,10 @@ import {
 } from "./common-schemas.js";
 
 /**
- * Schema for creating a new agent
+ * Schema for creating a new voice agent.
+ * @description Validates all input parameters for the elevenlabs_create_agent tool.
+ * Includes agent configuration, voice settings, and widget customization.
+ * @type {z.ZodObject}
  */
 export const CreateAgentSchema = z.object({
   name: z.string()
@@ -119,7 +123,9 @@ export const CreateAgentSchema = z.object({
 }).passthrough();
 
 /**
- * Schema for getting an agent by ID
+ * Schema for retrieving an agent by ID.
+ * @description Validates input for the elevenlabs_get_agent tool.
+ * @type {z.ZodObject}
  */
 export const GetAgentSchema = z.object({
   agent_id: AgentIdSchema,
@@ -127,7 +133,10 @@ export const GetAgentSchema = z.object({
 }).passthrough();
 
 /**
- * Schema for updating an agent
+ * Schema for updating an existing agent.
+ * @description Validates input for the elevenlabs_update_agent tool.
+ * All fields except agent_id are optional - only provided fields are updated.
+ * @type {z.ZodObject}
  */
 export const UpdateAgentSchema = z.object({
   agent_id: AgentIdSchema,
@@ -221,14 +230,20 @@ export const UpdateAgentSchema = z.object({
 }).passthrough();
 
 /**
- * Schema for deleting an agent
+ * Schema for deleting an agent.
+ * @description Validates input for the elevenlabs_delete_agent tool.
+ * This is a destructive operation that cannot be undone.
+ * @type {z.ZodObject}
  */
 export const DeleteAgentSchema = z.object({
   agent_id: AgentIdSchema
 }).passthrough();
 
 /**
- * Schema for listing agents
+ * Schema for listing agents with pagination.
+ * @description Validates input for the elevenlabs_list_agents tool.
+ * Supports pagination via limit and offset parameters.
+ * @type {z.ZodObject}
  */
 export const ListAgentsSchema = z.object({
   limit: LimitSchema,

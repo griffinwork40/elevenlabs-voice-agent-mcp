@@ -1,8 +1,8 @@
 /**
- * Response formatting utilities
- *
- * Converts API responses to human-readable Markdown or structured JSON format.
- * Provides consistent formatting across all MCP tools.
+ * @fileoverview Response formatting utilities
+ * @description Converts API responses to human-readable Markdown or structured JSON format.
+ * Provides consistent formatting across all MCP tools for optimal readability.
+ * @module services/formatters
  */
 
 import {
@@ -22,7 +22,21 @@ import {
 import { truncateIfNeeded, formatJSON, truncateMiddle } from "../utils/truncation.js";
 
 /**
- * Formats an agent in Markdown format
+ * Formats a single agent in human-readable Markdown format.
+ * @description Creates a comprehensive Markdown representation of an agent
+ * including configuration, prompt, tools, and widget settings.
+ *
+ * @param {Agent} agent - The agent object to format
+ * @returns {string} Formatted Markdown string
+ *
+ * @example
+ * const markdown = formatAgentMarkdown(agent);
+ * // Returns:
+ * // # Agent: Customer Support (ag_abc123)
+ * // **Created**: 2025-01-01T00:00:00.000Z
+ * // ## Configuration
+ * // - **LLM**: claude-sonnet-4-5@20250929
+ * // ...
  */
 export function formatAgentMarkdown(agent: Agent): string {
   const config = agent.conversation_config;
@@ -82,7 +96,22 @@ export function formatAgentMarkdown(agent: Agent): string {
 }
 
 /**
- * Formats a list of agents in Markdown format
+ * Formats a paginated list of agents in Markdown format.
+ * @description Creates a Markdown list with agent summaries and pagination guidance.
+ *
+ * @param {Agent[]} agents - Array of agent objects to format
+ * @param {number} total - Total number of agents available
+ * @param {number} offset - Current pagination offset
+ * @param {boolean} hasMore - Whether more agents are available
+ * @returns {string} Formatted Markdown string with pagination info
+ *
+ * @example
+ * const markdown = formatAgentListMarkdown(agents, 50, 0, true);
+ * // Returns:
+ * // # Agents (20 of 50)
+ * // ## 1. Customer Support
+ * // - **ID**: ag_abc123
+ * // ...
  */
 export function formatAgentListMarkdown(
   agents: Agent[],
@@ -114,7 +143,21 @@ export function formatAgentListMarkdown(
 }
 
 /**
- * Formats a conversation in Markdown format
+ * Formats a conversation with full transcript in Markdown format.
+ * @description Creates a detailed Markdown representation including metadata,
+ * transcript entries, tool calls, and conversation analysis.
+ *
+ * @param {ConversationMetadata} conversation - The conversation object to format
+ * @returns {string} Formatted Markdown string with transcript
+ *
+ * @example
+ * const markdown = formatConversationMarkdown(conversation);
+ * // Returns:
+ * // # Conversation: conv_xyz789
+ * // - **Agent ID**: ag_abc123
+ * // - **Status**: completed
+ * // ## Transcript (5 messages)
+ * // ...
  */
 export function formatConversationMarkdown(conversation: ConversationMetadata): string {
   let markdown = `# Conversation: ${conversation.conversation_id}\n\n`;
@@ -167,7 +210,14 @@ export function formatConversationMarkdown(conversation: ConversationMetadata): 
 }
 
 /**
- * Formats a list of conversations in Markdown format
+ * Formats a paginated list of conversations in Markdown format.
+ * @description Creates a Markdown list with conversation summaries and pagination guidance.
+ *
+ * @param {ConversationMetadata[]} conversations - Array of conversations to format
+ * @param {number} total - Total number of conversations available
+ * @param {number} offset - Current pagination offset
+ * @param {boolean} hasMore - Whether more conversations are available
+ * @returns {string} Formatted Markdown string with pagination info
  */
 export function formatConversationListMarkdown(
   conversations: ConversationMetadata[],
@@ -203,7 +253,12 @@ export function formatConversationListMarkdown(
 }
 
 /**
- * Formats a tool configuration in Markdown format
+ * Formats a single tool configuration in Markdown format.
+ * @description Creates a detailed Markdown representation of a webhook tool
+ * including parameters, URL, and method.
+ *
+ * @param {ToolConfig} tool - The tool configuration to format
+ * @returns {string} Formatted Markdown string
  */
 export function formatToolMarkdown(tool: ToolConfig): string {
   let markdown = `# Tool: ${tool.name}\n\n`;
@@ -231,7 +286,11 @@ export function formatToolMarkdown(tool: ToolConfig): string {
 }
 
 /**
- * Formats a list of tools in Markdown format
+ * Formats a list of tool configurations in Markdown format.
+ * @description Creates a summary list of all tools configured for an agent.
+ *
+ * @param {ToolConfig[]} tools - Array of tool configurations to format
+ * @returns {string} Formatted Markdown string
  */
 export function formatToolListMarkdown(tools: ToolConfig[]): string {
   if (tools.length === 0) {
@@ -256,7 +315,11 @@ export function formatToolListMarkdown(tools: ToolConfig[]): string {
 }
 
 /**
- * Formats a list of voices in Markdown format
+ * Formats a list of available voices in Markdown format.
+ * @description Creates a browseable list of voices with labels and preview URLs.
+ *
+ * @param {Voice[]} voices - Array of voice objects to format
+ * @returns {string} Formatted Markdown string
  */
 export function formatVoiceListMarkdown(voices: Voice[]): string {
   if (voices.length === 0) {
@@ -296,7 +359,18 @@ export function formatVoiceListMarkdown(voices: Voice[]): string {
 }
 
 /**
- * Formats widget embed code
+ * Generates HTML embed code for a voice agent widget.
+ * @description Creates ready-to-use HTML/JavaScript code for embedding
+ * a voice agent widget on a webpage.
+ *
+ * @param {string} agentId - The agent ID to embed
+ * @param {string} [color] - Optional widget theme color (hex format)
+ * @param {string} [avatarUrl] - Optional avatar image URL
+ * @returns {string} Formatted Markdown with HTML code block
+ *
+ * @example
+ * const code = formatWidgetCode("ag_abc123", "#4A90E2");
+ * // Returns Markdown with embeddable script tag
  */
 export function formatWidgetCode(agentId: string, color?: string, avatarUrl?: string): string {
   let markdown = `# Widget Embed Code\n\n`;
@@ -324,7 +398,12 @@ export function formatWidgetCode(agentId: string, color?: string, avatarUrl?: st
 }
 
 /**
- * Formats an outbound call response in Markdown format
+ * Formats an outbound call response in Markdown format.
+ * @description Creates a status summary for a call initiation attempt
+ * including conversation ID and Twilio call SID.
+ *
+ * @param {OutboundCallResponse} response - The outbound call response to format
+ * @returns {string} Formatted Markdown string
  */
 export function formatOutboundCallMarkdown(response: OutboundCallResponse): string {
   let markdown = `# Outbound Call ${response.success ? "Initiated" : "Failed"}\n\n`;
@@ -347,7 +426,12 @@ export function formatOutboundCallMarkdown(response: OutboundCallResponse): stri
 }
 
 /**
- * Formats a batch call response in Markdown format
+ * Formats a batch call job summary in Markdown format.
+ * @description Creates a status summary for a batch calling job
+ * including timing and call statistics.
+ *
+ * @param {BatchCallResponse} batch - The batch call response to format
+ * @returns {string} Formatted Markdown string
  */
 export function formatBatchCallMarkdown(batch: BatchCallResponse): string {
   let markdown = `# Batch Call: ${batch.name}\n\n`;
@@ -376,7 +460,11 @@ export function formatBatchCallMarkdown(batch: BatchCallResponse): string {
 }
 
 /**
- * Formats a batch call list in Markdown format
+ * Formats a paginated list of batch calls in Markdown format.
+ * @description Creates a summary list of batch calling jobs with status info.
+ *
+ * @param {WorkspaceBatchCallsResponse} response - The batch list response to format
+ * @returns {string} Formatted Markdown string with pagination cursor
  */
 export function formatBatchCallListMarkdown(response: WorkspaceBatchCallsResponse): string {
   const batches = response.batch_calls;
@@ -404,7 +492,12 @@ export function formatBatchCallListMarkdown(response: WorkspaceBatchCallsRespons
 }
 
 /**
- * Formats detailed batch call information with recipient statuses
+ * Formats detailed batch call information with all recipient statuses.
+ * @description Creates a comprehensive view of a batch job including
+ * status breakdown and individual recipient details.
+ *
+ * @param {BatchCallDetailedResponse} batch - The detailed batch response to format
+ * @returns {string} Formatted Markdown string with recipient statuses
  */
 export function formatBatchCallDetailMarkdown(batch: BatchCallDetailedResponse): string {
   let markdown = formatBatchCallMarkdown(batch);
@@ -452,7 +545,11 @@ export function formatBatchCallDetailMarkdown(batch: BatchCallDetailedResponse):
 }
 
 /**
- * Formats a list of phone numbers in Markdown format
+ * Formats a list of phone numbers in Markdown format.
+ * @description Creates a summary list of phone numbers with capabilities and assignments.
+ *
+ * @param {PhoneNumber[]} phoneNumbers - Array of phone numbers to format
+ * @returns {string} Formatted Markdown string
  */
 export function formatPhoneNumberListMarkdown(phoneNumbers: PhoneNumber[]): string {
   if (phoneNumbers.length === 0) {
@@ -486,7 +583,12 @@ export function formatPhoneNumberListMarkdown(phoneNumbers: PhoneNumber[]): stri
 }
 
 /**
- * Formats a single phone number in Markdown format
+ * Formats a single phone number with full details in Markdown format.
+ * @description Creates a detailed view of a phone number including
+ * capabilities, assignment, and provider-specific configuration.
+ *
+ * @param {PhoneNumber} phone - The phone number object to format
+ * @returns {string} Formatted Markdown string
  */
 export function formatPhoneNumberMarkdown(phone: PhoneNumber): string {
   let markdown = `# Phone Number: ${phone.label}\n\n`;
@@ -523,7 +625,11 @@ export function formatPhoneNumberMarkdown(phone: PhoneNumber): string {
 }
 
 /**
- * Formats phone number import response in Markdown format
+ * Formats a phone number import success response in Markdown format.
+ * @description Creates a confirmation message with next steps guidance.
+ *
+ * @param {ImportPhoneNumberResponse} response - The import response to format
+ * @returns {string} Formatted Markdown string with next steps
  */
 export function formatPhoneNumberImportMarkdown(response: ImportPhoneNumberResponse): string {
   let markdown = `# Phone Number Imported Successfully\n\n`;
@@ -537,14 +643,34 @@ export function formatPhoneNumberImportMarkdown(response: ImportPhoneNumberRespo
 }
 
 /**
- * Formats any response as JSON
+ * Formats any response data as a JSON string.
+ * @description Converts data to pretty-printed JSON with automatic truncation
+ * if the output exceeds character limits.
+ *
+ * @param {unknown} data - Any data to format as JSON
+ * @returns {string} Pretty-printed JSON string
  */
 export function formatAsJSON(data: unknown): string {
   return formatJSON(data);
 }
 
 /**
- * Main formatting function that routes to appropriate formatter
+ * Main formatting function that routes to the appropriate formatter.
+ * @description Central dispatch function that formats data based on the requested
+ * format (JSON or Markdown) and data type. Used by all MCP tool handlers.
+ *
+ * @param {unknown} data - The data to format
+ * @param {ResponseFormat} format - Output format (JSON or Markdown)
+ * @param {string} type - Data type identifier for selecting the appropriate formatter
+ * @returns {string} Formatted output string
+ *
+ * @example
+ * // Format an agent as Markdown
+ * const output = formatResponse(agent, ResponseFormat.MARKDOWN, "agent");
+ *
+ * @example
+ * // Format agent list as JSON
+ * const output = formatResponse(agents, ResponseFormat.JSON, "agent_list");
  */
 export function formatResponse(
   data: unknown,

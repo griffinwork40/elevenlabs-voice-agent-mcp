@@ -1,14 +1,19 @@
 /**
- * Zod validation schemas for outbound calling operations
- *
- * Provides strict input validation for making single outbound calls via Twilio.
+ * @fileoverview Zod validation schemas for outbound calling operations
+ * @description Provides strict input validation for making single outbound calls via Twilio.
+ * Includes phone number validation, configuration overrides, and personalization data.
+ * @module schemas/outbound-schemas
  */
 
 import { z } from "zod";
 import { ResponseFormatSchema, AgentIdSchema } from "./common-schemas.js";
 
 /**
- * Phone number schema with E.164 format validation
+ * Phone number schema with E.164 format validation.
+ * @description Validates phone numbers conform to E.164 international format.
+ * @type {z.ZodString}
+ * @example
+ * PhoneNumberSchema.parse("+14155551234"); // Valid
  */
 export const PhoneNumberSchema = z.string()
   .min(1, "Phone number is required")
@@ -16,7 +21,9 @@ export const PhoneNumberSchema = z.string()
   .describe("Phone number in E.164 format (e.g., '+1234567890')");
 
 /**
- * Phone number ID schema
+ * Phone number ID validation schema.
+ * @description Validates ElevenLabs phone number identifiers.
+ * @type {z.ZodString}
  */
 export const PhoneNumberIdSchema = z.string()
   .min(1, "Phone number ID is required")
@@ -24,7 +31,10 @@ export const PhoneNumberIdSchema = z.string()
   .describe("Unique identifier for the phone number");
 
 /**
- * Config overrides schema for conversation customization
+ * Configuration overrides schema for per-call customization.
+ * @description Allows overriding agent settings for a specific call.
+ * Includes agent behavior, TTS, turn-taking, and conversation settings.
+ * @type {z.ZodOptional<z.ZodObject>}
  */
 export const ConfigOverridesSchema = z.object({
   agent: z.object({
@@ -45,14 +55,19 @@ export const ConfigOverridesSchema = z.object({
 }).optional().describe("Configuration overrides for this specific call");
 
 /**
- * Conversation initiation data schema
+ * Conversation initiation data schema.
+ * @description Validates dynamic variables and configuration overrides for personalization.
+ * @type {z.ZodOptional<z.ZodRecord>}
  */
 export const ConversationInitDataSchema = z.record(z.any())
   .optional()
   .describe("Dynamic variables and configuration overrides for personalization");
 
 /**
- * Schema for starting an outbound call
+ * Schema for starting a single outbound call.
+ * @description Validates input for the elevenlabs_start_outbound_call operation.
+ * Requires agent ID, phone number ID, and destination number.
+ * @type {z.ZodObject}
  */
 export const StartOutboundCallSchema = z.object({
   agent_id: AgentIdSchema,

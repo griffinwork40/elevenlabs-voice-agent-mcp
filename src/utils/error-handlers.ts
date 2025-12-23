@@ -1,18 +1,29 @@
 /**
- * Error handling utilities for ElevenLabs API requests
- *
- * Provides consistent error handling and user-friendly error messages
- * for various API error scenarios.
+ * @fileoverview Error handling utilities for ElevenLabs API requests
+ * @description Provides consistent error handling and user-friendly error messages
+ * for various API error scenarios. Maps HTTP status codes to actionable guidance.
+ * @module utils/error-handlers
  */
 
 import axios from "axios";
 
 /**
- * Handles errors from ElevenLabs API requests
+ * Handles errors from ElevenLabs API requests and returns user-friendly messages.
+ * @description Parses axios errors and other exceptions, mapping them to clear,
+ * actionable error messages. Handles network errors, HTTP status codes, and
+ * API-specific error responses.
  *
- * @param error - The error object from axios or other sources
- * @param context - Additional context about the operation (e.g., "creating agent")
- * @returns User-friendly error message with actionable guidance
+ * @param {unknown} error - The error object from axios or other sources
+ * @param {string} [context] - Additional context about the operation (e.g., "creating agent")
+ * @returns {string} User-friendly error message with actionable guidance
+ *
+ * @example
+ * try {
+ *   await makeApiRequest();
+ * } catch (error) {
+ *   const message = handleElevenLabsError(error, "creating agent");
+ *   // Returns: "Error creating agent: Invalid API key. Please check your ELEVENLABS_API_KEY..."
+ * }
  */
 export function handleElevenLabsError(error: unknown, context?: string): string {
   const prefix = context ? `Error ${context}: ` : "Error: ";
@@ -67,9 +78,20 @@ export function handleElevenLabsError(error: unknown, context?: string): string 
 }
 
 /**
- * Validates that the API key is present in environment
+ * Validates that the ElevenLabs API key is present in the environment.
+ * @description Checks for the ELEVENLABS_API_KEY environment variable.
+ * Should be called at server startup to fail fast if not configured.
  *
- * @throws Error if ELEVENLABS_API_KEY is not set
+ * @throws {Error} If ELEVENLABS_API_KEY environment variable is not set
+ *
+ * @example
+ * // At server startup
+ * try {
+ *   validateApiKey();
+ * } catch (error) {
+ *   console.error("API key not configured");
+ *   process.exit(1);
+ * }
  */
 export function validateApiKey(): void {
   if (!process.env.ELEVENLABS_API_KEY) {
@@ -81,11 +103,22 @@ export function validateApiKey(): void {
 }
 
 /**
- * Wraps an async function with error handling
+ * Higher-order function that wraps an async function with error handling.
+ * @description Creates a new function that catches errors and formats them
+ * consistently using handleElevenLabsError.
  *
- * @param fn - The async function to wrap
- * @param context - Context for error messages
- * @returns Wrapped function that handles errors consistently
+ * @template T - Tuple type of the function arguments
+ * @template R - Return type of the function
+ * @param {(...args: T) => Promise<R>} fn - The async function to wrap
+ * @param {string} [context] - Context for error messages (e.g., "fetching agent")
+ * @returns {(...args: T) => Promise<R>} Wrapped function with consistent error handling
+ *
+ * @example
+ * const safeGetAgent = withErrorHandling(
+ *   async (id: string) => await api.getAgent(id),
+ *   "fetching agent"
+ * );
+ * // Errors now include context: "Error fetching agent: ..."
  */
 export function withErrorHandling<T extends unknown[], R>(
   fn: (...args: T) => Promise<R>,

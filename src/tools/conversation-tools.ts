@@ -1,7 +1,9 @@
 /**
- * Conversation retrieval tools
- *
- * MCP tools for accessing conversation histories, transcripts, and analytics.
+ * @fileoverview Conversation retrieval tools for ElevenLabs Voice Agents
+ * @description MCP tools for accessing conversation histories, transcripts, and analytics.
+ * These tools enable monitoring, debugging, and analysis of voice agent interactions
+ * by providing access to conversation metadata, full transcripts, and AI-generated analysis.
+ * @module tools/conversation-tools
  */
 
 import { getRequest } from "../services/elevenlabs-api.js";

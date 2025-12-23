@@ -1,8 +1,9 @@
 /**
- * Zod validation schemas for batch calling operations
- *
- * Provides strict input validation for submitting batch call jobs,
- * listing batch calls, and retrieving batch call details.
+ * @fileoverview Zod validation schemas for batch calling operations
+ * @description Provides strict input validation for submitting batch call jobs,
+ * listing batch calls, and retrieving batch call details. Supports up to 10,000
+ * recipients per batch with per-recipient personalization.
+ * @module schemas/batch-calling-schemas
  */
 
 import { z } from "zod";
@@ -10,7 +11,9 @@ import { ResponseFormatSchema, AgentIdSchema, LimitSchema } from "./common-schem
 import { PhoneNumberSchema, PhoneNumberIdSchema } from "./outbound-schemas.js";
 
 /**
- * Batch ID schema
+ * Batch ID validation schema.
+ * @description Validates ElevenLabs batch job identifiers.
+ * @type {z.ZodString}
  */
 export const BatchIdSchema = z.string()
   .min(1, "Batch ID is required")
@@ -18,7 +21,10 @@ export const BatchIdSchema = z.string()
   .describe("Unique identifier for the batch call job");
 
 /**
- * Recipient schema for batch calling
+ * Recipient schema for batch calling.
+ * @description Validates a single recipient in a batch call job.
+ * Either phone_number or whatsapp_user_id must be provided.
+ * @type {z.ZodObject}
  */
 export const OutboundCallRecipientSchema = z.object({
   id: z.string()
@@ -44,7 +50,10 @@ export const OutboundCallRecipientSchema = z.object({
 );
 
 /**
- * Schema for submitting a batch call job
+ * Schema for submitting a batch call job.
+ * @description Validates input for the elevenlabs_submit_batch_call operation.
+ * Supports 1-10,000 recipients with optional scheduling.
+ * @type {z.ZodObject}
  */
 export const SubmitBatchCallSchema = z.object({
   call_name: z.string()
@@ -73,7 +82,10 @@ export const SubmitBatchCallSchema = z.object({
 }).passthrough();
 
 /**
- * Schema for listing batch calls
+ * Schema for listing batch calls in a workspace.
+ * @description Validates input for the elevenlabs_list_batch_calls operation.
+ * Uses cursor-based pagination via last_doc parameter.
+ * @type {z.ZodObject}
  */
 export const ListBatchCallsSchema = z.object({
   limit: LimitSchema,
@@ -87,7 +99,10 @@ export const ListBatchCallsSchema = z.object({
 }).passthrough();
 
 /**
- * Schema for getting batch call details
+ * Schema for getting detailed batch call information.
+ * @description Validates input for the elevenlabs_get_batch_call operation.
+ * Returns batch metadata and all recipient statuses.
+ * @type {z.ZodObject}
  */
 export const GetBatchCallSchema = z.object({
   batch_id: BatchIdSchema,
