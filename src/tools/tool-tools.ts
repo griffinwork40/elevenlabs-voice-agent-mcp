@@ -5,7 +5,7 @@
  */
 
 import { getRequest, postRequest, deleteRequest } from "../services/elevenlabs-api.js";
-import { formatResponse } from "../services/formatters.js";
+import { formatResponse } from "../services/formatters/index.js";
 import { ToolConfig, Agent } from "../types.js";
 import {
   CreateWebhookToolSchema,

@@ -5,7 +5,7 @@
  */
 
 import { getRequest, postRequest } from "../services/elevenlabs-api.js";
-import { formatResponse } from "../services/formatters.js";
+import { formatResponse } from "../services/formatters/index.js";
 import { BatchCallResponse, BatchCallDetailedResponse, WorkspaceBatchCallsResponse } from "../types.js";
 import {
   SubmitBatchCallSchema,

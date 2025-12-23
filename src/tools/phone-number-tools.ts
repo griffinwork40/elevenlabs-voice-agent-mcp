@@ -6,7 +6,7 @@
  */
 
 import { getRequest, postRequest, patchRequest, deleteRequest } from "../services/elevenlabs-api.js";
-import { formatResponse } from "../services/formatters.js";
+import { formatResponse } from "../services/formatters/index.js";
 import { PhoneNumber, ImportPhoneNumberResponse } from "../types.js";
 import {
   ListPhoneNumbersSchema,
