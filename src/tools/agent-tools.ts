@@ -6,7 +6,7 @@
 
 import { z } from "zod";
 import { getRequest, postRequest, patchRequest, deleteRequest } from "../services/elevenlabs-api.js";
-import { formatResponse } from "../services/formatters.js";
+import { formatResponse } from "../services/formatters/index.js";
 import { Agent, PaginatedResponse, ResponseFormat } from "../types.js";
 import {
   CreateAgentSchema,

@@ -5,7 +5,7 @@
  */
 
 import { postRequest } from "../services/elevenlabs-api.js";
-import { formatResponse } from "../services/formatters.js";
+import { formatResponse } from "../services/formatters/index.js";
 import { OutboundCallResponse } from "../types.js";
 import { StartOutboundCallSchema } from "../schemas/outbound-schemas.js";
 

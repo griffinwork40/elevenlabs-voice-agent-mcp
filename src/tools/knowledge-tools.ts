@@ -5,7 +5,7 @@
  */
 
 import { postRequest } from "../services/elevenlabs-api.js";
-import { formatResponse } from "../services/formatters.js";
+import { formatResponse } from "../services/formatters/index.js";
 import { ResponseFormat } from "../types.js";
 import { AddKnowledgeBaseSchema } from "../schemas/tool-schemas.js";
 

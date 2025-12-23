@@ -5,7 +5,7 @@
  */
 
 import { getRequest } from "../services/elevenlabs-api.js";
-import { formatResponse, formatWidgetCode } from "../services/formatters.js";
+import { formatResponse, formatWidgetCode } from "../services/formatters/index.js";
 import { Voice } from "../types.js";
 import {
   GenerateWidgetCodeSchema,

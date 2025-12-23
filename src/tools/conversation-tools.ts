@@ -5,7 +5,7 @@
  */
 
 import { getRequest } from "../services/elevenlabs-api.js";
-import { formatResponse } from "../services/formatters.js";
+import { formatResponse } from "../services/formatters/index.js";
 import { ConversationMetadata, PaginatedResponse } from "../types.js";
 import {
   GetConversationSchema,
