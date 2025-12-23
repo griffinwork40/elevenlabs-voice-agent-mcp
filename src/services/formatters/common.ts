@@ -75,6 +75,9 @@ export type ResponseType =
  * @param format - Response format (markdown or json)
  * @param type - Type of data being formatted
  * @returns Formatted string (Markdown or JSON)
+ *
+ * @note For "widget" type, data must be pre-formatted using formatWidgetCode().
+ *       This function passes widget strings through unchanged.
  */
 export function formatResponse(
   data: unknown,
@@ -123,7 +126,9 @@ export function formatResponse(
       return formatVoiceListMarkdown(data as Voice[]);
 
     case "widget":
-      return data as string; // Already formatted by formatWidgetCode
+      // Widget data must be pre-formatted using formatWidgetCode() before calling formatResponse().
+      // This case acts as a pass-through for already-formatted widget embed code strings.
+      return data as string;
 
     case "outbound_call":
       return formatOutboundCallMarkdown(data as OutboundCallResponse);
