@@ -38,6 +38,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
+    "test:types": "tsc --noEmit -p tsconfig.test.json",
     "test:integration": "npm run test:startup && npm run test:api && npm run test:mcp && npm run test:tools",
     "test:startup": "tsx test/test-server-startup.ts",
     "test:api": "tsx test/test-api-connection.ts",

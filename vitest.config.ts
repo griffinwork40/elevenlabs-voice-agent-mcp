@@ -51,7 +51,7 @@ export default defineConfig({
     // Mock clear between tests
     clearMocks: true,
 
-    // Rest mocks between tests
+    // Reset mocks between tests
     restoreMocks: true
   }
 });
