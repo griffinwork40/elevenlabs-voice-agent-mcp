@@ -1,7 +1,9 @@
 /**
- * Utility tools
- *
- * MCP tools for widget generation, voice browsing, and other utilities.
+ * @fileoverview Utility tools for ElevenLabs Voice Agents
+ * @description MCP tools for widget generation, voice browsing, and other utilities.
+ * These tools support testing and configuration activities like generating embeddable
+ * widget code and browsing available voices.
+ * @module tools/utility-tools
  */
 
 import { getRequest } from "../services/elevenlabs-api.js";

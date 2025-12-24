@@ -1,8 +1,9 @@
 /**
- * Phone number management tools
- *
- * MCP tools for listing, importing, updating, and deleting phone numbers
- * connected to voice agents via Twilio or SIP trunking.
+ * @fileoverview Phone number management tools for ElevenLabs Voice Agents
+ * @description MCP tools for listing, importing, updating, and deleting phone numbers
+ * connected to voice agents via Twilio or SIP trunking. Phone numbers are required
+ * for outbound calling and can be assigned to agents for inbound call handling.
+ * @module tools/phone-number-tools
  */
 
 import { getRequest, postRequest, patchRequest, deleteRequest } from "../services/elevenlabs-api.js";

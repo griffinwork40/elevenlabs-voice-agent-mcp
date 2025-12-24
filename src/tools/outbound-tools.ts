@@ -1,7 +1,9 @@
 /**
- * Outbound calling tools
- *
- * MCP tool for initiating single outbound phone calls via Twilio.
+ * @fileoverview Outbound calling tools for ElevenLabs Voice Agents
+ * @description MCP tool for initiating single outbound phone calls via Twilio.
+ * Enables voice agents to proactively call customers with support for dynamic
+ * variables and per-call configuration overrides for personalization.
+ * @module tools/outbound-tools
  */
 
 import { postRequest } from "../services/elevenlabs-api.js";

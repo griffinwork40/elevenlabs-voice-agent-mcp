@@ -1,27 +1,33 @@
 /**
- * Phone number normalization utilities
- *
- * Converts various phone number formats to E.164 format required by ElevenLabs.
+ * @fileoverview Phone number normalization utilities
+ * @description Converts various phone number formats to E.164 format required by ElevenLabs.
+ * Handles common US/Canadian formats and strips extensions.
+ * @module utils/phone-normalizer
  */
 
 /**
- * Normalizes a phone number to E.164 format
+ * Normalizes a phone number to E.164 format.
+ * @description Cleans and standardizes phone numbers to the E.164 international format
+ * required by telephony APIs. Handles various input formats including parentheses,
+ * dashes, dots, spaces, and extensions.
  *
- * E.164 format: ^\+?[1-9]\d{1,14}$
- * - Optional + at start
- * - Must start with 1-9 (not 0)
- * - 1-14 digits total
- * - No spaces, dashes, parentheses, or other characters
+ * E.164 format requirements:
+ * - Starts with + followed by country code
+ * - Contains only digits after the +
+ * - Total length 1-15 digits
+ * - Must start with 1-9 (no leading zeros)
  *
- * @param phoneNumber - Raw phone number in any format
- * @param defaultCountryCode - Default country code to add if missing (default: '+1' for US/Canada)
- * @returns Normalized phone number in E.164 format, or null if invalid
+ * @param {string | null | undefined} phoneNumber - Raw phone number in any format
+ * @param {string} [defaultCountryCode='+1'] - Default country code for US/Canada
+ * @returns {string | null} Normalized phone number in E.164 format, or null if invalid
  *
  * @example
- * normalizePhoneNumber('+1 412 481 2210') // Returns: '+14124812210'
- * normalizePhoneNumber('(623) 258-3673') // Returns: '+16232583673'
- * normalizePhoneNumber('817.527.9708') // Returns: '+18175279708'
+ * normalizePhoneNumber('+1 412 481 2210')  // Returns: '+14124812210'
+ * normalizePhoneNumber('(623) 258-3673')   // Returns: '+16232583673'
+ * normalizePhoneNumber('817.527.9708')     // Returns: '+18175279708'
  * normalizePhoneNumber('518-434-8128 x206') // Returns: '+15184348128'
+ * normalizePhoneNumber('')                  // Returns: null
+ * normalizePhoneNumber(null)                // Returns: null
  */
 export function normalizePhoneNumber(
   phoneNumber: string | null | undefined,
@@ -113,10 +119,17 @@ export function normalizePhoneNumber(
 }
 
 /**
- * Validates if a phone number is in E.164 format
+ * Validates if a phone number is in E.164 format.
+ * @description Checks if the provided string matches the E.164 phone number format
+ * without attempting to normalize it.
  *
- * @param phoneNumber - Phone number to validate
- * @returns True if valid E.164 format, false otherwise
+ * @param {string} phoneNumber - Phone number to validate
+ * @returns {boolean} True if valid E.164 format, false otherwise
+ *
+ * @example
+ * isValidE164('+14155551234')  // Returns: true
+ * isValidE164('4155551234')    // Returns: true (without +)
+ * isValidE164('(415) 555-1234') // Returns: false
  */
 export function isValidE164(phoneNumber: string): boolean {
   const e164Pattern = /^\+?[1-9]\d{1,14}$/;
@@ -124,11 +137,19 @@ export function isValidE164(phoneNumber: string): boolean {
 }
 
 /**
- * Normalizes an array of phone numbers, filtering out invalid ones
+ * Normalizes an array of phone numbers, separating valid from invalid.
+ * @description Batch processes phone numbers, returning successfully normalized
+ * numbers and tracking which entries failed validation with their original indices.
  *
- * @param phoneNumbers - Array of raw phone numbers
- * @param defaultCountryCode - Default country code to add if missing
- * @returns Array of normalized phone numbers and array of invalid entries with indices
+ * @param {(string | null | undefined)[]} phoneNumbers - Array of raw phone numbers
+ * @param {string} [defaultCountryCode='+1'] - Default country code for US/Canada
+ * @returns {{ normalized: string[], invalid: Array<{ index: number, original: string | null | undefined }> }}
+ *   Object containing array of normalized numbers and array of invalid entries with indices
+ *
+ * @example
+ * const result = normalizePhoneNumbers(['(415) 555-1234', 'invalid', '+1234567890']);
+ * // result.normalized: ['+14155551234', '+1234567890']
+ * // result.invalid: [{ index: 1, original: 'invalid' }]
  */
 export function normalizePhoneNumbers(
   phoneNumbers: (string | null | undefined)[],

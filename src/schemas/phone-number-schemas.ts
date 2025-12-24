@@ -1,8 +1,8 @@
 /**
- * Zod validation schemas for phone number management operations
- *
- * Provides strict input validation for listing, importing, updating,
- * and deleting phone numbers connected to voice agents.
+ * @fileoverview Zod validation schemas for phone number management operations
+ * @description Provides strict input validation for listing, importing, updating,
+ * and deleting phone numbers connected to voice agents. Supports Twilio and SIP trunk providers.
+ * @module schemas/phone-number-schemas
  */
 
 import { z } from "zod";
@@ -10,21 +10,27 @@ import { ResponseFormatSchema, AgentIdSchema } from "./common-schemas.js";
 import { PhoneNumberSchema, PhoneNumberIdSchema } from "./outbound-schemas.js";
 
 /**
- * Phone provider enum
+ * Phone provider validation schema.
+ * @description Validates the phone number provider type.
+ * @type {z.ZodEnum}
  */
 export const PhoneProviderSchema = z.enum(["twilio", "sip_trunk"], {
   errorMap: () => ({ message: "Provider must be 'twilio' or 'sip_trunk'" })
 }).describe("Phone number provider");
 
 /**
- * Region ID schema
+ * ElevenLabs region ID validation schema.
+ * @description Validates geographic region identifiers.
+ * @type {z.ZodEnum}
  */
 export const RegionIdSchema = z.enum(["us1", "ie1", "au1"], {
   errorMap: () => ({ message: "Region must be 'us1', 'ie1', or 'au1'" })
 }).describe("ElevenLabs region identifier");
 
 /**
- * Edge location schema
+ * Twilio edge location validation schema.
+ * @description Validates Twilio edge locations for voice routing optimization.
+ * @type {z.ZodEnum}
  */
 export const EdgeLocationSchema = z.enum([
   "ashburn", "dublin", "frankfurt", "sao-paulo",
@@ -34,14 +40,18 @@ export const EdgeLocationSchema = z.enum([
 }).describe("Twilio edge location");
 
 /**
- * LiveKit stack schema
+ * LiveKit stack configuration schema.
+ * @description Validates LiveKit stack type for SIP trunk configurations.
+ * @type {z.ZodEnum}
  */
 export const LiveKitStackSchema = z.enum(["standard", "static"], {
   errorMap: () => ({ message: "LiveKit stack must be 'standard' or 'static'" })
 }).describe("LiveKit stack configuration");
 
 /**
- * Region config schema for Twilio
+ * Regional configuration schema for Twilio phone numbers.
+ * @description Validates region-specific settings for Twilio integration.
+ * @type {z.ZodObject}
  */
 export const RegionConfigSchema = z.object({
   region_id: RegionIdSchema,
@@ -50,14 +60,18 @@ export const RegionConfigSchema = z.object({
 }).describe("Regional configuration for Twilio phone numbers");
 
 /**
- * Schema for listing phone numbers
+ * Schema for listing phone numbers in a workspace.
+ * @description Validates input for the elevenlabs_list_phone_numbers operation.
+ * @type {z.ZodObject}
  */
 export const ListPhoneNumbersSchema = z.object({
   response_format: ResponseFormatSchema
 }).passthrough();
 
 /**
- * Schema for getting a phone number
+ * Schema for getting a specific phone number's details.
+ * @description Validates input for the elevenlabs_get_phone_number operation.
+ * @type {z.ZodObject}
  */
 export const GetPhoneNumberSchema = z.object({
   phone_number_id: PhoneNumberIdSchema,
@@ -66,7 +80,10 @@ export const GetPhoneNumberSchema = z.object({
 }).passthrough();
 
 /**
- * Schema for importing a Twilio phone number
+ * Schema for importing a Twilio phone number.
+ * @description Validates input for the elevenlabs_import_phone_number operation.
+ * Requires Twilio credentials and phone number details.
+ * @type {z.ZodObject}
  */
 export const ImportPhoneNumberSchema = z.object({
   phone_number: PhoneNumberSchema
@@ -104,7 +121,10 @@ export const ImportPhoneNumberSchema = z.object({
 }).passthrough();
 
 /**
- * Schema for updating a phone number
+ * Schema for updating a phone number's configuration.
+ * @description Validates input for the elevenlabs_update_phone_number operation.
+ * Primarily used for assigning/unassigning agents.
+ * @type {z.ZodObject}
  */
 export const UpdatePhoneNumberSchema = z.object({
   phone_number_id: PhoneNumberIdSchema,
@@ -133,7 +153,10 @@ export const UpdatePhoneNumberSchema = z.object({
 }).passthrough();
 
 /**
- * Schema for deleting a phone number
+ * Schema for deleting a phone number from the workspace.
+ * @description Validates input for the elevenlabs_delete_phone_number operation.
+ * This is a destructive operation that cannot be undone.
+ * @type {z.ZodObject}
  */
 export const DeletePhoneNumberSchema = z.object({
   phone_number_id: PhoneNumberIdSchema

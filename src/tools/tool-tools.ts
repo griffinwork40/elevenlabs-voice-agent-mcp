@@ -1,7 +1,9 @@
 /**
- * Agent tool management
- *
- * MCP tools for creating, listing, and deleting webhook tools that agents can invoke.
+ * @fileoverview Agent tool management for ElevenLabs Voice Agents
+ * @description MCP tools for creating, listing, and deleting webhook tools that agents can invoke.
+ * Webhook tools allow agents to interact with external APIs and services during conversations,
+ * enabling dynamic functionality like order lookups, scheduling, and data retrieval.
+ * @module tools/tool-tools
  */
 
 import { getRequest, postRequest, deleteRequest } from "../services/elevenlabs-api.js";

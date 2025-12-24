@@ -1,7 +1,8 @@
 /**
- * Zod validation schemas for conversation operations
- *
- * Provides strict input validation for retrieving and managing conversations.
+ * @fileoverview Zod validation schemas for conversation operations
+ * @description Provides strict input validation for retrieving and managing conversations.
+ * These schemas define expected input for conversation listing and retrieval.
+ * @module schemas/conversation-schemas
  */
 
 import { z } from "zod";
@@ -15,7 +16,10 @@ import {
 } from "./common-schemas.js";
 
 /**
- * Schema for getting a single conversation
+ * Schema for retrieving a single conversation.
+ * @description Validates input for the elevenlabs_get_conversation operation.
+ * Returns full transcript and analysis data.
+ * @type {z.ZodObject}
  */
 export const GetConversationSchema = z.object({
   conversation_id: ConversationIdSchema,
@@ -23,7 +27,10 @@ export const GetConversationSchema = z.object({
 }).passthrough();
 
 /**
- * Schema for listing conversations
+ * Schema for listing conversations with filtering.
+ * @description Validates input for the elevenlabs_list_conversations operation.
+ * Supports filtering by agent, status, and date range with pagination.
+ * @type {z.ZodObject}
  */
 export const ListConversationsSchema = z.object({
   agent_id: AgentIdSchema

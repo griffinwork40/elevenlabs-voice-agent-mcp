@@ -1,7 +1,9 @@
 /**
- * Batch calling tools
- *
- * MCP tools for submitting batch call jobs, listing batches, and retrieving batch details.
+ * @fileoverview Batch calling tools for ElevenLabs Voice Agents
+ * @description MCP tools for submitting batch call jobs, listing batches, and retrieving batch details.
+ * Enables mass outreach with support for up to 10,000 recipients per batch, scheduling,
+ * and per-recipient personalization through dynamic variables.
+ * @module tools/batch-calling-tools
  */
 
 import { getRequest, postRequest } from "../services/elevenlabs-api.js";

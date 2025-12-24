@@ -1,9 +1,20 @@
 #!/usr/bin/env node
 
 /**
- * ElevenLabs Voice Agent MCP Server
+ * @fileoverview ElevenLabs Voice Agent MCP Server
+ * @description Main entry point for the MCP server providing tools for voice agent development.
+ * This server implements the Model Context Protocol (MCP) to expose 23 specialized tools
+ * for creating, configuring, testing, monitoring, and deploying ElevenLabs Voice Agents.
  *
- * Main entry point for the MCP server providing tools for voice agent development.
+ * @requires @modelcontextprotocol/sdk
+ * @requires axios
+ * @requires zod
+ *
+ * @example
+ * // Start the server (stdio transport)
+ * $ ELEVENLABS_API_KEY=your_key node dist/index.js
+ *
+ * @module index
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -54,9 +65,22 @@ import {
 } from "./tools/phone-number-tools.js";
 
 /**
- * Initialize and start the MCP server
+ * Initializes and starts the MCP server.
+ * @description Sets up the MCP server with all available tools and connects
+ * to the stdio transport for communication with MCP clients.
+ *
+ * The function:
+ * 1. Validates the ELEVENLABS_API_KEY environment variable
+ * 2. Creates an MCP server instance
+ * 3. Registers all 23 tools organized by tier
+ * 4. Connects to stdio transport for client communication
+ *
+ * @async
+ * @returns {Promise<void>}
+ * @throws {Error} If ELEVENLABS_API_KEY is not set
+ * @throws {Error} If server initialization fails
  */
-async function main() {
+async function main(): Promise<void> {
   // Validate API key on startup
   try {
     validateApiKey();
