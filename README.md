@@ -605,6 +605,66 @@ elevenlabs-voice-agent-mcp/
 |----------|----------|-------------|
 | `ELEVENLABS_API_KEY` | Yes | Your ElevenLabs API key |
 
+### Testing
+
+The project includes a comprehensive test suite with **351 unit tests** achieving **88%+ code coverage**.
+
+#### Running Tests
+
+```bash
+# Run all unit tests
+npm test
+
+# Run tests in watch mode (re-runs on file changes)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run tests with UI (browser-based test runner)
+npm run test:ui
+
+# TypeScript type checking for test files
+npm run test:types
+
+# Run integration tests (requires API key)
+npm run test:integration
+```
+
+#### Test Structure
+
+```
+src/__tests__/
+├── mocks/
+│   └── fixtures.ts          # Mock data and test fixtures
+├── schemas/
+│   └── schemas.test.ts      # Zod schema validation tests
+├── services/
+│   ├── elevenlabs-api.test.ts  # API client tests
+│   └── formatters.test.ts      # Response formatter tests
+├── tools/
+│   ├── agent-tools.test.ts        # Agent CRUD tests
+│   ├── batch-calling-tools.test.ts
+│   ├── conversation-tools.test.ts
+│   ├── knowledge-tools.test.ts
+│   ├── outbound-tools.test.ts
+│   ├── phone-number-tools.test.ts
+│   ├── tool-tools.test.ts
+│   └── utility-tools.test.ts
+├── utils/
+│   ├── error-handlers.test.ts
+│   └── truncation.test.ts
+└── setup.ts                 # Test environment setup
+```
+
+#### Coverage Thresholds
+
+The test suite enforces minimum coverage thresholds:
+- **Statements**: 85%
+- **Branches**: 75%
+- **Functions**: 85%
+- **Lines**: 85%
+
 ### Adding New Tools
 
 1. **Create schema** in `src/schemas/`:
