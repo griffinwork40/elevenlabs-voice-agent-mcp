@@ -6,10 +6,11 @@
 
 import { vi } from "vitest";
 import axios from "axios";
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
 
 // Type for mocked axios
 type MockedAxios = {
-  (config: unknown): Promise<{ data: unknown }>;
+  <T = unknown, R = AxiosResponse<T>>(config: AxiosRequestConfig): Promise<R>;
   request: ReturnType<typeof vi.fn>;
   get: ReturnType<typeof vi.fn>;
   post: ReturnType<typeof vi.fn>;

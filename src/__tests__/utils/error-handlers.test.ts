@@ -27,16 +27,18 @@ function createAxiosError(status: number, detail: string | object) {
 describe("Error Handlers", () => {
   describe("handleElevenLabsError", () => {
     // Mock axios.isAxiosError to check the isAxiosError property
-    const originalIsAxiosError = axios.isAxiosError;
+    let isAxiosErrorSpy: ReturnType<typeof vi.spyOn>;
     
     beforeEach(() => {
-      (axios.isAxiosError as unknown) = (error: unknown): boolean => {
-        return !!(error as { isAxiosError?: boolean })?.isAxiosError;
-      };
+      isAxiosErrorSpy = vi
+        .spyOn(axios, "isAxiosError")
+        .mockImplementation((error: unknown): boolean => {
+          return !!(error as { isAxiosError?: boolean })?.isAxiosError;
+        });
     });
     
     afterEach(() => {
-      (axios.isAxiosError as unknown) = originalIsAxiosError;
+      isAxiosErrorSpy.mockRestore();
     });
 
     describe("HTTP Status Code Errors", () => {
@@ -220,7 +222,7 @@ describe("Error Handlers", () => {
     describe("Non-Axios Errors", () => {
       it("should handle standard Error", () => {
         // Reset axios.isAxiosError to return false for non-axios errors
-        (axios.isAxiosError as unknown) = () => false;
+        isAxiosErrorSpy.mockReturnValue(false);
         const error = new Error("Something went wrong");
 
         const result = handleElevenLabsError(error);
@@ -229,21 +231,21 @@ describe("Error Handlers", () => {
       });
 
       it("should handle string error", () => {
-        (axios.isAxiosError as unknown) = () => false;
+        isAxiosErrorSpy.mockReturnValue(false);
         const result = handleElevenLabsError("String error message");
 
         expect(result).toContain("String error message");
       });
 
       it("should handle unknown error type", () => {
-        (axios.isAxiosError as unknown) = () => false;
+        isAxiosErrorSpy.mockReturnValue(false);
         const result = handleElevenLabsError({ unknown: "object" });
 
         expect(result).toContain("Unexpected error");
       });
 
       it("should handle null error", () => {
-        (axios.isAxiosError as unknown) = () => false;
+        isAxiosErrorSpy.mockReturnValue(false);
         const result = handleElevenLabsError(null);
 
         expect(result).toContain("Unexpected error");
@@ -252,7 +254,7 @@ describe("Error Handlers", () => {
 
     describe("Context Parameter", () => {
       it("should include context in message", () => {
-        (axios.isAxiosError as unknown) = () => false;
+        isAxiosErrorSpy.mockReturnValue(false);
         const error = new Error("Test error");
 
         const result = handleElevenLabsError(error, "creating agent");
@@ -262,7 +264,7 @@ describe("Error Handlers", () => {
       });
 
       it("should work without context", () => {
-        (axios.isAxiosError as unknown) = () => false;
+        isAxiosErrorSpy.mockReturnValue(false);
         const error = new Error("Test error");
 
         const result = handleElevenLabsError(error);

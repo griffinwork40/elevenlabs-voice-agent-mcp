@@ -7,7 +7,7 @@
 import { vi } from "vitest";
 
 // Mock environment variables
-process.env.ELEVENLABS_API_KEY = "test_api_key_12345";
+process.env.ELEVENLABS_API_KEY = "sk_test_mock_key_do_not_use";
 
 // Global mock for axios to prevent actual HTTP calls
 vi.mock("axios", async () => {
