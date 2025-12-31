@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import {
   elevenlabs_create_agent,
   elevenlabs_get_agent,
@@ -320,12 +320,13 @@ describe("Agent Tools", () => {
       });
 
       // Verify the PATCH request does NOT include tools in the prompt
-      const patchCall = mockedAxios.mock.calls[1][0];
+      const patchCall = mockedAxios.mock.calls[1][0] as unknown as AxiosRequestConfig & { data: Record<string, unknown> };
       expect(patchCall.method).toBe("PATCH");
-      expect(patchCall.data.conversation_config.agent.prompt.tools).toBeUndefined();
+      const patchData = patchCall.data as { conversation_config?: { agent?: { prompt?: { tools?: unknown; prompt?: string; llm?: string } } } };
+      expect(patchData.conversation_config?.agent?.prompt?.tools).toBeUndefined();
       // But other prompt fields should still be present
-      expect(patchCall.data.conversation_config.agent.prompt.prompt).toBe("Updated prompt text");
-      expect(patchCall.data.conversation_config.agent.prompt.llm).toBe("claude-sonnet-4-5@20250929");
+      expect(patchData.conversation_config?.agent?.prompt?.prompt).toBe("Updated prompt text");
+      expect(patchData.conversation_config?.agent?.prompt?.llm).toBe("claude-sonnet-4-5@20250929");
     });
 
     it("should exclude tools even when only updating non-prompt fields", async () => {
@@ -339,13 +340,14 @@ describe("Agent Tools", () => {
         response_format: ResponseFormat.MARKDOWN
       });
 
-      const patchCall = mockedAxios.mock.calls[1][0];
-      expect(patchCall.method).toBe("PATCH");
-      expect(patchCall.data.name).toBe("New Name");
+      const patchCall2 = mockedAxios.mock.calls[1][0] as unknown as AxiosRequestConfig & { data: Record<string, unknown> };
+      expect(patchCall2.method).toBe("PATCH");
+      const patchData2 = patchCall2.data as { name?: string; conversation_config?: { agent?: { prompt?: { tools?: unknown } } } };
+      expect(patchData2.name).toBe("New Name");
       // conversation_config should not be in the payload for name-only updates
       // but if it were, tools should be excluded
-      if (patchCall.data.conversation_config?.agent?.prompt) {
-        expect(patchCall.data.conversation_config.agent.prompt.tools).toBeUndefined();
+      if (patchData2.conversation_config?.agent?.prompt) {
+        expect(patchData2.conversation_config.agent.prompt.tools).toBeUndefined();
       }
     });
   });
