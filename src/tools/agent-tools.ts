@@ -256,20 +256,26 @@ Error Handling:
     }
 
     // Build conversation config updates
+    // When spreading the agent config, we need to exclude 'tools' from the prompt
+    // to avoid "both_tools_and_tool_ids_provided" error when the agent uses tool_ids
+    const { tools: _existingTools, ...promptWithoutTools } = currentAgent.conversation_config.agent.prompt;
     const conversationConfigUpdates: Record<string, unknown> = {
-      agent: { ...currentAgent.conversation_config.agent } as Record<string, unknown>,
+      agent: {
+        ...currentAgent.conversation_config.agent,
+        prompt: promptWithoutTools
+      } as Record<string, unknown>,
       tts: { ...currentAgent.conversation_config.tts } as Record<string, unknown>
     };
 
     let hasConversationConfigChanges = false;
 
-    // Agent updates
+    // Agent updates (prompt already has tools excluded from promptWithoutTools above)
     if (parsed.prompt !== undefined || parsed.llm !== undefined ||
         parsed.temperature !== undefined || parsed.max_tokens !== undefined) {
       conversationConfigUpdates.agent = {
         ...(conversationConfigUpdates.agent as Record<string, unknown>),
         prompt: {
-          ...(currentAgent.conversation_config.agent.prompt),
+          ...promptWithoutTools,
           ...(parsed.prompt !== undefined && { prompt: parsed.prompt }),
           ...(parsed.llm !== undefined && { llm: parsed.llm }),
           ...(parsed.temperature !== undefined && { temperature: parsed.temperature }),
