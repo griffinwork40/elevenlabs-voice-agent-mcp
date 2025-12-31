@@ -13,7 +13,7 @@ import {
   elevenlabs_delete_agent,
   elevenlabs_list_agents
 } from "../../tools/agent-tools.js";
-import { mockAgent, mockAgentMinimal, validCreateAgentInput } from "../mocks/fixtures.js";
+import { mockAgent, mockAgentMinimal, mockAgentWithLegacyTools, validCreateAgentInput } from "../mocks/fixtures.js";
 import { ResponseFormat } from "../../types.js";
 
 // Mock axios
@@ -306,6 +306,47 @@ describe("Agent Tools", () => {
           })
         })
       );
+    });
+
+    it("should exclude legacy tools array from PATCH request to avoid API conflict", async () => {
+      // Agent has legacy tools in prompt - simulates agents using tool_ids system
+      mockedAxios.mockResolvedValueOnce({ data: mockAgentWithLegacyTools });
+      mockedAxios.mockResolvedValueOnce({ data: mockAgentWithLegacyTools });
+
+      await elevenlabs_update_agent.handler({
+        agent_id: "ag_legacy456",
+        prompt: "Updated prompt text",
+        response_format: ResponseFormat.MARKDOWN
+      });
+
+      // Verify the PATCH request does NOT include tools in the prompt
+      const patchCall = mockedAxios.mock.calls[1][0];
+      expect(patchCall.method).toBe("PATCH");
+      expect(patchCall.data.conversation_config.agent.prompt.tools).toBeUndefined();
+      // But other prompt fields should still be present
+      expect(patchCall.data.conversation_config.agent.prompt.prompt).toBe("Updated prompt text");
+      expect(patchCall.data.conversation_config.agent.prompt.llm).toBe("claude-sonnet-4-5@20250929");
+    });
+
+    it("should exclude tools even when only updating non-prompt fields", async () => {
+      // Agent has legacy tools - updating just the name should still exclude tools
+      mockedAxios.mockResolvedValueOnce({ data: mockAgentWithLegacyTools });
+      mockedAxios.mockResolvedValueOnce({ data: { ...mockAgentWithLegacyTools, name: "New Name" } });
+
+      await elevenlabs_update_agent.handler({
+        agent_id: "ag_legacy456",
+        name: "New Name",
+        response_format: ResponseFormat.MARKDOWN
+      });
+
+      const patchCall = mockedAxios.mock.calls[1][0];
+      expect(patchCall.method).toBe("PATCH");
+      expect(patchCall.data.name).toBe("New Name");
+      // conversation_config should not be in the payload for name-only updates
+      // but if it were, tools should be excluded
+      if (patchCall.data.conversation_config?.agent?.prompt) {
+        expect(patchCall.data.conversation_config.agent.prompt.tools).toBeUndefined();
+      }
     });
   });
 
