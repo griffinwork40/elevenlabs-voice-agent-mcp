@@ -17,6 +17,10 @@ import {
   DeleteAgentSchema,
   ListAgentsSchema
 } from "../schemas/agent-schemas.js";
+import {
+  DEFAULT_ASR_PROVIDER,
+  DEFAULT_ASR_AUDIO_FORMAT
+} from "../constants.js";
 
 /**
  * Creates a new ElevenLabs Voice Agent
@@ -111,8 +115,8 @@ Error Handling:
         },
         // ASR (Automatic Speech Recognition) configuration
         asr: {
-          provider: parsed.asr_provider ?? "elevenlabs",
-          user_input_audio_format: parsed.asr_audio_format ?? "pcm_16000",
+          provider: parsed.asr_provider ?? DEFAULT_ASR_PROVIDER,
+          user_input_audio_format: parsed.asr_audio_format ?? DEFAULT_ASR_AUDIO_FORMAT,
           ...(parsed.asr_quality !== undefined && { quality: parsed.asr_quality }),
           ...(parsed.asr_keywords !== undefined && parsed.asr_keywords.length > 0 && { keywords: parsed.asr_keywords })
         },
@@ -340,8 +344,8 @@ Error Handling:
       const currentAsr = currentAgent.conversation_config.asr;
       conversationConfigUpdates.asr = {
         // Preserve current values with defaults
-        provider: currentAsr?.provider ?? "elevenlabs",
-        user_input_audio_format: currentAsr?.user_input_audio_format ?? "pcm_16000",
+        provider: currentAsr?.provider ?? DEFAULT_ASR_PROVIDER,
+        user_input_audio_format: currentAsr?.user_input_audio_format ?? DEFAULT_ASR_AUDIO_FORMAT,
         ...(currentAsr?.quality && { quality: currentAsr.quality }),
         ...(currentAsr?.keywords && { keywords: currentAsr.keywords }),
         // Apply user updates (these override current values)

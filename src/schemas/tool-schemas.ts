@@ -101,17 +101,17 @@ export const DeleteToolSchema = z.object({
 /**
  * Knowledge base document schema.
  * @description Validates a single document to add to an agent's knowledge base.
- * Supports text content, URL references, or file uploads.
+ * Supports text content or URL references.
  * @type {z.ZodObject}
  */
 const KnowledgeBaseDocumentSchema = z.object({
-  type: z.enum(["text", "url", "file"], {
-    errorMap: () => ({ message: "Document type must be 'text', 'url', or 'file'" })
-  }).describe("Type of document to add: 'text' for raw text, 'url' for web content, 'file' for file uploads"),
+  type: z.enum(["text", "url"], {
+    errorMap: () => ({ message: "Document type must be 'text' or 'url'" })
+  }).describe("Type of document to add: 'text' for raw text, 'url' for web content"),
 
   content: z.string()
     .min(1, "Document content is required")
-    .describe("For 'text' type: the actual text content. For 'url' type: the URL to fetch. For 'file' type: the file path or base64-encoded content."),
+    .describe("For 'text' type: the actual text content. For 'url' type: the URL to fetch"),
 
   metadata: z.record(z.string(), z.string())
     .optional()
