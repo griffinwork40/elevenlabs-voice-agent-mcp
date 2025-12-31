@@ -84,6 +84,51 @@ export const mockAgentMinimal: Agent = {
   created_at: "2025-01-15T09:00:00Z"
 };
 
+/**
+ * Mock agent with legacy tools array in the prompt.
+ * Used to test that the update handler correctly excludes tools
+ * to avoid "both_tools_and_tool_ids_provided" API error.
+ */
+export const mockAgentWithLegacyTools: Agent = {
+  agent_id: "ag_legacy456",
+  name: "Agent With Legacy Tools",
+  conversation_config: {
+    agent: {
+      prompt: {
+        prompt: "You are a helpful agent with webhook tools configured.",
+        llm: "claude-sonnet-4-5@20250929",
+        temperature: 0.7,
+        tools: [
+          {
+            name: "check_order_status",
+            description: "Check order status",
+            type: "webhook",
+            url: "https://api.example.com/orders",
+            method: "POST",
+            parameters: [
+              { name: "order_id", type: "string", description: "Order ID", required: true }
+            ]
+          }
+        ],
+        knowledge_base: []
+      },
+      first_message: "Hello!",
+      language: "en"
+    },
+    tts: {
+      voice_id: "21m00Tcm4TlvDq8ikWAM",
+      model_id: "eleven_turbo_v2_5",
+      stability: 0.5,
+      similarity_boost: 0.75
+    },
+    turn: {
+      turn_timeout: 10,
+      silence_end_call_timeout: 15
+    }
+  },
+  created_at: "2025-01-15T09:00:00Z"
+};
+
 export const mockAgentsList = [mockAgent, mockAgentMinimal];
 
 // ============================================
