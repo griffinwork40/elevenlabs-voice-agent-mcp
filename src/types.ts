@@ -185,6 +185,14 @@ export interface TurnConfig {
  */
 export interface ASRConfig {
   /**
+   * ASR provider for speech recognition.
+   * @description The transcription service to use:
+   * - `elevenlabs`: ElevenLabs' native transcription (default)
+   * - `scribe_realtime`: Alternative real-time transcription
+   */
+  provider?: "elevenlabs" | "scribe_realtime";
+
+  /**
    * Recognition quality level.
    * @description Higher quality may increase latency.
    */
@@ -192,9 +200,16 @@ export interface ASRConfig {
 
   /**
    * Audio format for user input.
-   * @description PCM format with sample rate specification.
+   * @description PCM and compressed formats at various sample rates.
    */
-  user_input_audio_format?: "pcm_16000" | "pcm_22050" | "pcm_44100";
+  user_input_audio_format?: "pcm_8000" | "pcm_16000" | "pcm_22050" | "pcm_24000" | "pcm_44100" | "pcm_48000" | "ulaw_8000";
+
+  /**
+   * Keywords to boost recognition probability.
+   * @description Array of domain-specific terms to improve recognition accuracy.
+   * Useful for specialized vocabulary like product names, technical terms, etc.
+   */
+  keywords?: string[];
 }
 
 /**

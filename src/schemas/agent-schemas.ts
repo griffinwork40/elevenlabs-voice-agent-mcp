@@ -13,7 +13,12 @@ import {
   DEFAULT_LLM,
   DEFAULT_VOICE_MODEL,
   DEFAULT_VOICE_ID,
-  DEFAULT_LANGUAGE
+  DEFAULT_LANGUAGE,
+  ASR_PROVIDERS,
+  ASR_AUDIO_FORMATS,
+  ASR_QUALITY_LEVELS,
+  DEFAULT_ASR_PROVIDER,
+  DEFAULT_ASR_AUDIO_FORMAT
 } from "../constants.js";
 import {
   ResponseFormatSchema,
@@ -114,6 +119,31 @@ export const CreateAgentSchema = z.object({
     .max(600, "Silence timeout must be between 1 and 600")
     .optional()
     .describe("Seconds of silence before ending call (1-600, default: 15)"),
+
+  // ASR (Automatic Speech Recognition) Configuration
+  asr_provider: z.enum(ASR_PROVIDERS, {
+    errorMap: () => ({ message: `ASR provider must be one of: ${ASR_PROVIDERS.join(", ")}` })
+  })
+    .default(DEFAULT_ASR_PROVIDER)
+    .optional()
+    .describe(`ASR provider for speech recognition (default: ${DEFAULT_ASR_PROVIDER}). Options: elevenlabs (native), scribe_realtime (alternative)`),
+
+  asr_audio_format: z.enum(ASR_AUDIO_FORMATS, {
+    errorMap: () => ({ message: `Audio format must be one of: ${ASR_AUDIO_FORMATS.join(", ")}` })
+  })
+    .default(DEFAULT_ASR_AUDIO_FORMAT)
+    .optional()
+    .describe(`Audio format for user input (default: ${DEFAULT_ASR_AUDIO_FORMAT}). Options: pcm_8000, pcm_16000, pcm_22050, pcm_24000, pcm_44100, pcm_48000, ulaw_8000`),
+
+  asr_quality: z.enum(ASR_QUALITY_LEVELS, {
+    errorMap: () => ({ message: `ASR quality must be one of: ${ASR_QUALITY_LEVELS.join(", ")}` })
+  })
+    .optional()
+    .describe("ASR quality level (low, medium, high). Higher quality may increase latency."),
+
+  asr_keywords: z.array(z.string())
+    .optional()
+    .describe("Keywords to boost recognition probability for domain-specific terms (e.g., product names, technical terms)"),
 
   widget_color: ColorSchema.optional().describe("Widget theme color"),
 
@@ -221,6 +251,23 @@ export const UpdateAgentSchema = z.object({
     .max(600, "Silence timeout must be between 1 and 600")
     .optional()
     .describe("Seconds of silence before ending call (1-600)"),
+
+  // ASR (Automatic Speech Recognition) Configuration
+  asr_provider: z.enum(ASR_PROVIDERS)
+    .optional()
+    .describe("Updated ASR provider (elevenlabs or scribe_realtime)"),
+
+  asr_audio_format: z.enum(ASR_AUDIO_FORMATS)
+    .optional()
+    .describe("Updated audio format for user input"),
+
+  asr_quality: z.enum(ASR_QUALITY_LEVELS)
+    .optional()
+    .describe("Updated ASR quality level"),
+
+  asr_keywords: z.array(z.string())
+    .optional()
+    .describe("Updated keywords for domain-specific term recognition"),
 
   widget_color: ColorSchema.optional().describe("Updated widget color"),
 

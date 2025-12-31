@@ -215,3 +215,54 @@ export const EDGE_LOCATIONS = [
   "ashburn", "dublin", "frankfurt", "sao-paulo",
   "singapore", "sydney", "tokyo", "umatilla", "roaming"
 ] as const;
+
+// ============================================================================
+// ASR (Automatic Speech Recognition) Configuration
+// ============================================================================
+
+/**
+ * Supported ASR providers.
+ * @description Speech recognition providers available for voice agents:
+ * - `elevenlabs`: ElevenLabs' native transcription service
+ * - `scribe_realtime`: Alternative real-time transcription provider
+ * @constant {readonly string[]}
+ */
+export const ASR_PROVIDERS = ["elevenlabs", "scribe_realtime"] as const;
+
+/**
+ * Default ASR provider.
+ * @description ElevenLabs' native transcription is the default.
+ * @constant {string}
+ */
+export const DEFAULT_ASR_PROVIDER = "elevenlabs";
+
+/**
+ * Supported audio formats for ASR.
+ * @description PCM formats at various sample rates and compressed formats:
+ * - PCM formats: 8kHz, 16kHz, 22.05kHz, 24kHz, 44.1kHz, 48kHz
+ * - Compressed: μ-law at 8kHz
+ * @constant {readonly string[]}
+ */
+export const ASR_AUDIO_FORMATS = [
+  "pcm_8000",
+  "pcm_16000",
+  "pcm_22050",
+  "pcm_24000",
+  "pcm_44100",
+  "pcm_48000",
+  "ulaw_8000"
+] as const;
+
+/**
+ * Default audio format for ASR.
+ * @description 16kHz PCM is a good balance of quality and bandwidth.
+ * @constant {string}
+ */
+export const DEFAULT_ASR_AUDIO_FORMAT = "pcm_16000";
+
+/**
+ * Supported ASR quality levels.
+ * @description Quality settings for speech recognition accuracy.
+ * @constant {readonly string[]}
+ */
+export const ASR_QUALITY_LEVELS = ["low", "medium", "high"] as const;
