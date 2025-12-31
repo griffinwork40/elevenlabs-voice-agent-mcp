@@ -1,0 +1,958 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<elevenlabs_tts_best_practices>
+  <metadata>
+    <title>ElevenLabs Text-to-Speech Best Practices</title>
+    <subtitle>Learn how to control delivery, pronunciation, emotion, and optimize text for speech</subtitle>
+    <version>1.0</version>
+    <last_updated>2025-12-22</last_updated>
+  </metadata>
+
+  <section id="controls">
+    <title>Controls</title>
+    <note type="info">
+      ElevenLabs is actively working on "Director's Mode" to give users even greater control over outputs. These techniques provide a practical way to achieve nuanced results until advanced features are rolled out.
+    </note>
+
+    <subsection id="pauses">
+      <title>Pauses</title>
+      <note type="info">
+        Eleven v3 does not support SSML break tags. Use the techniques described in the "Prompting Eleven v3 (alpha)" section for controlling pauses with v3.
+      </note>
+
+      <description>
+        Use &lt;break time="x.xs" /&gt; for natural pauses up to 3 seconds.
+      </description>
+
+      <warning>
+        Using too many break tags in a single generation can cause instability. The AI might speed up, or introduce additional noises or audio artifacts. This issue is being addressed.
+      </warning>
+
+      <example>
+        <input>"Hold on, let me think." &lt;break time="1.5s" /&gt; "Alright, I've got it."</input>
+      </example>
+
+      <best_practices>
+        <practice>Consistency: Use &lt;break&gt; tags consistently to maintain natural speech flow. Excessive use can lead to instability.</practice>
+        <practice>Voice-Specific Behavior: Different voices may handle pauses differently, especially those trained with filler sounds like "uh" or "ah".</practice>
+      </best_practices>
+
+      <alternatives>
+        <alternative>
+          <method>Dashes (- or --)</method>
+          <use_case>Short pauses</use_case>
+          <consistency>Less consistent than break tags</consistency>
+        </alternative>
+        <alternative>
+          <method>Ellipses (...)</method>
+          <use_case>Hesitant tones</use_case>
+          <consistency>Less consistent than break tags</consistency>
+        </alternative>
+      </alternatives>
+
+      <examples>
+        <example>"It… well, it might work."</example>
+        <example>"Wait — what's that noise?"</example>
+      </examples>
+    </subsection>
+
+    <subsection id="pronunciation">
+      <title>Pronunciation</title>
+
+      <section id="phoneme_tags">
+        <title>Phoneme Tags</title>
+        <description>
+          Specify pronunciation using SSML phoneme tags. Supported alphabets include CMU Arpabet and the International Phonetic Alphabet (IPA).
+        </description>
+
+        <note type="warning">
+          Phoneme tags are only compatible with "Eleven Flash v2", "Eleven Turbo v2" and "Eleven English v1" models.
+        </note>
+
+        <examples>
+          <example alphabet="cmu-arpabet">
+            <code>&lt;phoneme alphabet="cmu-arpabet" ph="M AE1 D IH0 S AH0 N"&gt;Madison&lt;/phoneme&gt;</code>
+          </example>
+          <example alphabet="ipa">
+            <code>&lt;phoneme alphabet="ipa" ph="ˈæktʃuəli"&gt;actually&lt;/phoneme&gt;</code>
+          </example>
+        </examples>
+
+        <recommendation>
+          Use CMU Arpabet for consistent and predictable results with current AI models. While IPA can be effective, CMU Arpabet generally offers more reliable performance.
+        </recommendation>
+
+        <limitation>
+          Phoneme tags only work for individual words. For names with first and last names that need specific pronunciation, create a phoneme tag for each word separately.
+        </limitation>
+
+        <best_practice>
+          <title>Stress Marking</title>
+          <description>Ensure correct stress marking for multi-syllable words to maintain accurate pronunciation.</description>
+          <correct_usage>
+            <code>&lt;phoneme alphabet="cmu-arpabet" ph="P R AH0 N AH0 N S IY EY1 SH AH0 N"&gt;pronunciation&lt;/phoneme&gt;</code>
+          </correct_usage>
+          <incorrect_usage>
+            <code>&lt;phoneme alphabet="cmu-arpabet" ph="P R AH N AH N S IY EY S N"&gt;pronunciation&lt;/phoneme&gt;</code>
+          </incorrect_usage>
+        </best_practice>
+      </section>
+
+      <section id="alias_tags">
+        <title>Alias Tags</title>
+        <description>
+          For models that don't support phoneme tags, you can write words more phonetically or use various tricks such as capital letters, dashes, apostrophes, or single quotation marks around letters.
+        </description>
+
+        <example>
+          <description>A word like "trapezii" could be spelled "trapezIi" to emphasize the "ii"</description>
+        </example>
+
+        <use_cases>
+          <use_case>
+            <description>Specify pronunciation using pronunciation dictionaries</description>
+            <applicable_models>Multilingual v2, Turbo v2.5 (models that don't support phoneme tags)</applicable_models>
+            <available_in>Studio, Dubbing Studio, Speech Synthesis API</available_in>
+          </use_case>
+        </use_cases>
+
+        <examples>
+          <example type="unusual_pronunciation">
+            <code>
+&lt;lexeme&gt;
+  &lt;grapheme&gt;Claughton&lt;/grapheme&gt;
+  &lt;alias&gt;Cloffton&lt;/alias&gt;
+&lt;/lexeme&gt;
+            </code>
+          </example>
+          <example type="acronym">
+            <code>
+&lt;lexeme&gt;
+  &lt;grapheme&gt;UN&lt;/grapheme&gt;
+  &lt;alias&gt;United Nations&lt;/alias&gt;
+&lt;/lexeme&gt;
+            </code>
+          </example>
+        </examples>
+      </section>
+
+      <section id="pronunciation_dictionaries">
+        <title>Pronunciation Dictionaries</title>
+        <description>
+          Some tools (Studio, Dubbing Studio) allow creating and uploading pronunciation dictionaries to specify pronunciation of certain words, such as character or brand names, or how acronyms should be read.
+        </description>
+
+        <functionality>
+          <item>Upload lexicon or dictionary file specifying word pairs and their pronunciation</item>
+          <item>Use phonetic alphabet or word substitutions</item>
+          <item>Automatic pronunciation replacement when words are encountered</item>
+          <item>Auto-recalculation of project segments needing re-conversion</item>
+        </functionality>
+
+        <file_formats>
+          <format>.TXT</format>
+          <format>.PLS (W3C Pronunciation Lexicon Specification format)</format>
+        </file_formats>
+
+        <supported_methods>
+          <method>Phoneme tags</method>
+          <method>Alias tags</method>
+        </supported_methods>
+
+        <note type="important">
+          Searches are case sensitive. Dictionary is checked from start to end and only the first replacement is used.
+        </note>
+
+        <examples>
+          <example alphabet="cmu-arpabet">
+            <code><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<lexicon version="1.0"
+      xmlns="http://www.w3.org/2005/01/pronunciation-lexicon"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.w3.org/2005/01/pronunciation-lexicon
+        http://www.w3.org/TR/2007/CR-pronunciation-lexicon-20071212/pls.xsd"
+      alphabet="cmu-arpabet" xml:lang="en-GB">
+  <lexeme>
+    <grapheme>apple</grapheme>
+    <phoneme>AE P AH L</phoneme>
+  </lexeme>
+  <lexeme>
+    <grapheme>UN</grapheme>
+    <alias>United Nations</alias>
+  </lexeme>
+</lexicon>]]></code>
+          </example>
+          <example alphabet="ipa">
+            <code><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<lexicon version="1.0"
+      xmlns="http://www.w3.org/2005/01/pronunciation-lexicon"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.w3.org/2005/01/pronunciation-lexicon
+        http://www.w3.org/TR/2007/CR-pronunciation-lexicon-20071212/pls.xsd"
+      alphabet="ipa" xml:lang="en-GB">
+  <lexeme>
+    <grapheme>Apple</grapheme>
+    <phoneme>ˈæpl̩</phoneme>
+  </lexeme>
+  <lexeme>
+    <grapheme>UN</grapheme>
+    <alias>United Nations</alias>
+  </lexeme>
+</lexicon>]]></code>
+          </example>
+        </examples>
+
+        <tools_for_generation>
+          <tool>
+            <name>Sequitur G2P</name>
+            <url>https://github.com/sequitur-g2p/sequitur-g2p</url>
+            <description>Open-source tool that learns pronunciation rules from data and generates phonetic transcriptions</description>
+          </tool>
+          <tool>
+            <name>Phonetisaurus</name>
+            <url>https://github.com/AdolfVonKleist/Phonetisaurus</url>
+            <description>Open-source G2P system trained on existing dictionaries like CMUdict</description>
+          </tool>
+          <tool>
+            <name>eSpeak</name>
+            <url>https://github.com/espeak-ng/espeak-ng</url>
+            <description>Speech synthesizer that can generate phoneme transcriptions from text</description>
+          </tool>
+          <tool>
+            <name>CMU Pronouncing Dictionary</name>
+            <url>https://github.com/cmusphinx/cmudict</url>
+            <description>Pre-built English dictionary with phonetic transcriptions</description>
+          </tool>
+        </tools_for_generation>
+      </section>
+    </subsection>
+
+    <subsection id="emotion">
+      <title>Emotion</title>
+      <description>
+        Convey emotions through narrative context or explicit dialogue tags. This approach helps the AI understand the tone and emotion to emulate.
+      </description>
+
+      <example>
+        <input>"You're leaving?" she asked, her voice trembling with sadness. "That's it!" he exclaimed triumphantly.</input>
+      </example>
+
+      <note>
+        Explicit dialogue tags yield more predictable results than relying solely on context, however the model will still speak out the emotional delivery guides. These can be removed in post-production using an audio editor if unwanted.
+      </note>
+    </subsection>
+
+    <subsection id="pace">
+      <title>Pace</title>
+      <description>
+        The pacing of the audio is highly influenced by the audio used to create the voice. When creating your voice, use longer, continuous samples to avoid pacing issues like unnaturally fast speech.
+      </description>
+
+      <speed_setting>
+        <description>Control the speed of generated audio using the speed setting</description>
+        <availability>Text to Speech (website and API), Studio, Agents Platform</availability>
+        <location>Voice settings</location>
+        <default_value>1.0</default_value>
+        <minimum>0.7 (slower)</minimum>
+        <maximum>1.2 (faster)</maximum>
+        <note>Extreme values may affect quality of generated speech</note>
+      </speed_setting>
+
+      <text_based_control>
+        <description>Control pacing by writing in a natural, narrative style</description>
+        <example>"I… I thought you'd understand," he said, his voice slowing with disappointment.</example>
+      </text_based_control>
+    </subsection>
+
+    <subsection id="tips">
+      <title>Tips</title>
+
+      <common_issues>
+        <issue>
+          <problem>Inconsistent pauses</problem>
+          <solution>Ensure &lt;break time="x.xs" /&gt; syntax is used for pauses</solution>
+        </issue>
+        <issue>
+          <problem>Pronunciation errors</problem>
+          <solution>Use CMU Arpabet or IPA phoneme tags for precise pronunciation</solution>
+        </issue>
+        <issue>
+          <problem>Emotion mismatch</problem>
+          <solution>Add narrative context or explicit tags to guide emotion. Remember to remove any emotional guidance text in post-production.</solution>
+        </issue>
+      </common_issues>
+
+      <improving_output>
+        <tip>Experiment with alternative phrasing to achieve desired pacing or emotion</tip>
+        <tip>For complex sound effects, break prompts into smaller, sequential elements and combine results manually</tip>
+      </improving_output>
+    </subsection>
+
+    <subsection id="creative_control">
+      <title>Creative Control</title>
+      <note type="info">
+        While "Director's Mode" is being developed, use these interim techniques to maximize creativity and precision
+      </note>
+
+      <techniques>
+        <technique>
+          <name>Narrative styling</name>
+          <description>Write prompts in a narrative style, similar to scriptwriting, to guide tone and pacing effectively</description>
+        </technique>
+        <technique>
+          <name>Layered outputs</name>
+          <description>Generate sound effects or speech in segments and layer them together using audio editing software for more complex compositions</description>
+        </technique>
+        <technique>
+          <name>Phonetic experimentation</name>
+          <description>If pronunciation isn't perfect, experiment with alternate spellings or phonetic approximations to achieve desired results</description>
+        </technique>
+        <technique>
+          <name>Manual adjustments</name>
+          <description>Combine individual sound effects manually in post-production for sequences that require precise timing</description>
+        </technique>
+        <technique>
+          <name>Feedback iteration</name>
+          <description>Iterate on results by tweaking descriptions, tags, or emotional cues</description>
+        </technique>
+      </techniques>
+    </subsection>
+  </section>
+
+  <section id="text_normalization">
+    <title>Text Normalization</title>
+    <description>
+      When using Text to Speech with complex items like phone numbers, zip codes and emails they might be mispronounced. This is often due to the specific items not being in the training set and smaller models failing to generalize how they should be pronounced.
+    </description>
+
+    <note type="info">
+      Normalization is enabled by default for all TTS models to help improve pronunciation of numbers, dates, and other complex text elements.
+    </note>
+
+    <subsection id="why_different_reading">
+      <title>Why Do Models Read Out Inputs Differently?</title>
+      <description>
+        Certain models are trained to read out numbers and phrases in a more human way. For instance, "$1,000,000" is correctly read as "one million dollars" by Eleven Multilingual v2 model, but as "one thousand thousand dollars" by Eleven Flash v2.5 model.
+      </description>
+
+      <explanation>
+        The Multilingual v2 model is larger and can better generalize the reading of numbers naturally for human listeners, whereas Flash v2.5 is much smaller and cannot.
+      </explanation>
+
+      <common_examples>
+        <example type="phone_numbers">"123-456-7890"</example>
+        <example type="currencies">"$47,345.67"</example>
+        <example type="calendar_events">"2024-01-01"</example>
+        <example type="time">"9:23 AM"</example>
+        <example type="addresses">"123 Main St, Anytown, USA"</example>
+        <example type="urls">"example.com/link/to/resource"</example>
+        <example type="abbreviations">"TB" instead of "Terabyte"</example>
+        <example type="shortcuts">"Ctrl + Z"</example>
+      </common_examples>
+    </subsection>
+
+    <subsection id="mitigation">
+      <title>Mitigation</title>
+
+      <method id="use_trained_models">
+        <title>Use Trained Models</title>
+        <description>
+          The simplest way to mitigate this is to use a TTS model trained to read out numbers and phrases in a more human way, such as Eleven Multilingual v2 model. This might not always be possible if low latency is critical (e.g., conversational agents).
+        </description>
+      </method>
+
+      <method id="llm_normalization">
+        <title>Apply Normalization in LLM Prompts</title>
+        <description>
+          When using an LLM to generate text for TTS, add normalization instructions to the prompt.
+        </description>
+
+        <steps>
+          <step>
+            <title>Use clear and explicit prompts</title>
+            <description>LLMs respond best to structured and explicit instructions. Your prompt should clearly specify that you want text converted into a readable format for speech.</description>
+          </step>
+
+          <step>
+            <title>Handle different number formats</title>
+            <description>Not all numbers are read out in the same way. Consider how different number types should be spoken:</description>
+            <number_types>
+              <type>
+                <name>Cardinal numbers</name>
+                <example>123 → "one hundred twenty-three"</example>
+              </type>
+              <type>
+                <name>Ordinal numbers</name>
+                <example>2nd → "second"</example>
+              </type>
+              <type>
+                <name>Monetary values</name>
+                <example>$45.67 → "forty-five dollars and sixty-seven cents"</example>
+              </type>
+              <type>
+                <name>Phone numbers</name>
+                <example>"123-456-7890" → "one two three, four five six, seven eight nine zero"</example>
+              </type>
+              <type>
+                <name>Decimals &amp; Fractions</name>
+                <example>"3.5" → "three point five", "⅔" → "two-thirds"</example>
+              </type>
+              <type>
+                <name>Roman numerals</name>
+                <example>"XIV" → "fourteen" (or "the fourteenth" if a title)</example>
+              </type>
+            </number_types>
+          </step>
+
+          <step>
+            <title>Remove or expand abbreviations</title>
+            <description>Common abbreviations should be expanded for clarity</description>
+            <abbreviations>
+              <abbreviation>"Dr." → "Doctor"</abbreviation>
+              <abbreviation>"Ave." → "Avenue"</abbreviation>
+              <abbreviation>"St." → "Street" (but "St. Patrick" should remain)</abbreviation>
+            </abbreviations>
+            <prompt_instruction>Expand all abbreviations to their full spoken forms.</prompt_instruction>
+          </step>
+
+          <step>
+            <title>Alphanumeric normalization</title>
+            <description>Not all normalization is about numbers, certain alphanumeric phrases should also be normalized for clarity</description>
+            <examples>
+              <example>Shortcuts: "Ctrl + Z" → "control z"</example>
+              <example>Abbreviations for units: "100km" → "one hundred kilometers"</example>
+              <example>Symbols: "100%" → "one hundred percent"</example>
+              <example>URLs: "elevenlabs.io/docs" → "eleven labs dot io slash docs"</example>
+              <example>Calendar events: "2024-01-01" → "January first, two-thousand twenty-four"</example>
+            </examples>
+          </step>
+
+          <step>
+            <title>Consider edge cases</title>
+            <description>Different contexts might require different conversions</description>
+            <edge_cases>
+              <case>
+                <type>Dates</type>
+                <example>"01/02/2023" → "January second, twenty twenty-three" or "the first of February, twenty twenty-three" (depending on locale)</example>
+              </case>
+              <case>
+                <type>Time</type>
+                <example>"14:30" → "two thirty PM"</example>
+              </case>
+            </edge_cases>
+            <note>If you need a specific format, explicitly state it in the prompt</note>
+          </step>
+        </steps>
+
+        <starter_prompt>
+          <code><![CDATA[Convert the output text into a format suitable for text-to-speech. Ensure that numbers, symbols, and abbreviations are expanded for clarity when read aloud. Expand all abbreviations to their full spoken forms.
+
+Example input and output:
+
+"$42.50" → "forty-two dollars and fifty cents"
+"£1,001.32" → "one thousand and one pounds and thirty-two pence"
+"1234" → "one thousand two hundred thirty-four"
+"3.14" → "three point one four"
+"555-555-5555" → "five five five, five five five, five five five five"
+"2nd" → "second"
+"XIV" → "fourteen" - unless it's a title, then it's "the fourteenth"
+"3.5" → "three point five"
+"⅔" → "two-thirds"
+"Dr." → "Doctor"
+"Ave." → "Avenue"
+"St." → "Street" (but saints like "St. Patrick" should remain)
+"Ctrl + Z" → "control z"
+"100km" → "one hundred kilometers"
+"100%" → "one hundred percent"
+"elevenlabs.io/docs" → "eleven labs dot io slash docs"
+"2024-01-01" → "January first, two-thousand twenty-four"
+"123 Main St, Anytown, USA" → "one two three Main Street, Anytown, United States of America"
+"14:30" → "two thirty PM"
+"01/02/2023" → "January second, two-thousand twenty-three" or "the first of February, two-thousand twenty-three", depending on locale of the user]]></code>
+        </starter_prompt>
+      </method>
+
+      <method id="regex_preprocessing">
+        <title>Use Regular Expressions for Preprocessing</title>
+        <description>
+          If using code to prompt an LLM, you can use regular expressions to normalize the text before providing it to the model. This is a more advanced technique requiring knowledge of regular expressions.
+        </description>
+
+        <note>Code examples available in Python and TypeScript demonstrating normalization of monetary values and phone numbers</note>
+      </method>
+    </subsection>
+  </section>
+
+  <section id="prompting_eleven_v3">
+    <title>Prompting Eleven v3 (Alpha)</title>
+    <description>
+      This guide provides the most effective tags and techniques for prompting Eleven v3, including voice selection, changes in capitalization, punctuation, audio tags and multi-speaker dialogue.
+    </description>
+
+    <note type="warning">
+      Eleven v3 is in alpha. Very short prompts are more likely to cause inconsistent outputs. Experiment with prompts greater than 250 characters.
+    </note>
+
+    <note type="info">
+      Eleven v3 does not support SSML break tags. Use audio tags, punctuation (ellipses), and text structure to control pauses and pacing with v3.
+    </note>
+
+    <subsection id="v3_voice_selection">
+      <title>Voice Selection</title>
+      <description>
+        The most important parameter for Eleven v3 is the voice you choose. It needs to be similar enough to the desired delivery. For example, if the voice is shouting and you use the audio tag [whispering], it likely won't work well.
+      </description>
+
+      <ivc_creation>
+        <recommendation>Include a broader emotional range than before when creating IVCs</recommendation>
+        <consequence>Voices in the voice library may produce more variable results compared to v2 and v2.5 models</consequence>
+        <resource>Over 22 excellent voices for V3 available at: https://elevenlabs.io/app/voice-library/collections/aF6JALq9R6tXwCczjhKH</resource>
+      </ivc_creation>
+
+      <voice_strategies>
+        <strategy>
+          <type>Emotionally diverse</type>
+          <description>For expressive IVC voices, vary emotional tones across the recording—include both neutral and dynamic samples</description>
+        </strategy>
+        <strategy>
+          <type>Targeted niche</type>
+          <description>For specific use cases like sports commentary, maintain consistent emotion throughout the dataset</description>
+        </strategy>
+        <strategy>
+          <type>Neutral</type>
+          <description>Neutral voices tend to be more stable across languages and styles, providing reliable baseline performance</description>
+        </strategy>
+      </voice_strategies>
+
+      <note type="info">
+        Professional Voice Clones (PVCs) are currently not fully optimized for Eleven v3, resulting in potentially lower clone quality compared to earlier models. During this research preview stage it would be best to find an Instant Voice Clone (IVC) or designed voice for your project if you need to use v3 features.
+      </note>
+    </subsection>
+
+    <subsection id="v3_settings">
+      <title>Settings</title>
+
+      <stability_slider>
+        <description>The stability slider is the most important setting in v3, controlling how closely the generated voice adheres to the original reference audio</description>
+
+        <levels>
+          <level>
+            <name>Creative</name>
+            <characteristics>More emotional and expressive, but prone to hallucinations</characteristics>
+          </level>
+          <level>
+            <name>Natural</name>
+            <characteristics>Closest to the original voice recording—balanced and neutral</characteristics>
+          </level>
+          <level>
+            <name>Robust</name>
+            <characteristics>Highly stable, but less responsive to directional prompts but consistent, similar to v2</characteristics>
+          </level>
+        </levels>
+
+        <note>
+          For maximum expressiveness with audio tags, use Creative or Natural settings. Robust reduces responsiveness to directional prompts.
+        </note>
+      </stability_slider>
+    </subsection>
+
+    <subsection id="v3_audio_tags">
+      <title>Audio Tags</title>
+      <description>
+        Eleven v3 introduces emotional control through audio tags. You can direct voices to laugh, whisper, act sarcastic, or express curiosity among many other styles. Speed is also controlled through audio tags.
+      </description>
+
+      <note type="warning">
+        The voice you choose and its training samples will affect tag effectiveness. Some tags work well with certain voices while others may not. Don't expect a whispering voice to suddenly shout with a [shout] tag.
+      </note>
+
+      <categories>
+        <category id="voice_related">
+          <title>Voice-related</title>
+          <description>Tags that control vocal delivery and emotional expression</description>
+          <tags>
+            <tag>[laughs]</tag>
+            <tag>[laughs harder]</tag>
+            <tag>[starts laughing]</tag>
+            <tag>[wheezing]</tag>
+            <tag>[whispers]</tag>
+            <tag>[sighs]</tag>
+            <tag>[exhales]</tag>
+            <tag>[sarcastic]</tag>
+            <tag>[curious]</tag>
+            <tag>[excited]</tag>
+            <tag>[crying]</tag>
+            <tag>[snorts]</tag>
+            <tag>[mischievously]</tag>
+          </tags>
+          <example>[whispers] I never knew it could be this way, but I'm glad we're here.</example>
+        </category>
+
+        <category id="sound_effects">
+          <title>Sound Effects</title>
+          <description>Add environmental sounds and effects</description>
+          <tags>
+            <tag>[gunshot]</tag>
+            <tag>[applause]</tag>
+            <tag>[clapping]</tag>
+            <tag>[explosion]</tag>
+            <tag>[swallows]</tag>
+            <tag>[gulps]</tag>
+          </tags>
+          <example>[applause] Thank you all for coming tonight! [gunshot] What was that?</example>
+        </category>
+
+        <category id="unique_special">
+          <title>Unique and Special</title>
+          <description>Experimental tags for creative applications</description>
+          <tags>
+            <tag>[strong X accent]</tag>
+            <tag>[sings]</tag>
+            <tag>[woo]</tag>
+            <tag>[fart]</tag>
+          </tags>
+          <example>[strong French accent] "Zat's life, my friend — you can't control everysing."</example>
+          <warning>Some experimental tags may be less consistent across different voices. Test thoroughly before production use.</warning>
+        </category>
+      </categories>
+    </subsection>
+
+    <subsection id="v3_punctuation">
+      <title>Punctuation</title>
+      <description>Punctuation significantly affects delivery in v3</description>
+
+      <punctuation_effects>
+        <effect>
+          <mark>Ellipses (...)</mark>
+          <result>Add pauses and weight</result>
+        </effect>
+        <effect>
+          <mark>Capitalization</mark>
+          <result>Increases emphasis</result>
+        </effect>
+        <effect>
+          <mark>Standard punctuation</mark>
+          <result>Provides natural speech rhythm</result>
+        </effect>
+      </punctuation_effects>
+
+      <example>"It was a VERY long day [sigh] … nobody listens anymore."</example>
+    </subsection>
+
+    <subsection id="v3_single_speaker">
+      <title>Single Speaker Examples</title>
+      <note>Use tags intentionally and match them to the voice's character. A meditative voice shouldn't shout; a hyped voice won't whisper convincingly.</note>
+
+      <examples>
+        <example type="expressive_monologue">
+          <code><![CDATA["Okay, you are NOT going to believe this.
+
+You know how I've been totally stuck on that short story?
+
+Like, staring at the screen for HOURS, just... nothing?
+
+[frustrated sigh] I was seriously about to just trash the whole thing. Start over.
+
+Give up, probably. But then!
+
+Last night, I was just doodling, not even thinking about it, right?
+
+And this one little phrase popped into my head. Just... completely out of the blue.
+
+And it wasn't even for the story, initially.
+
+But then I typed it out, just to see. And it was like... the FLOODGATES opened!
+
+Suddenly, I knew exactly where the character needed to go, what the ending had to be...
+
+It all just CLICKED. [happy gasp] I stayed up till, like, 3 AM, just typing like a maniac.
+
+Didn't even stop for coffee! [laughs] And it's... it's GOOD! Like, really good.
+
+It feels so... complete now, you know? Like it finally has a soul.
+
+I am so incredibly PUMPED to finish editing it now.
+
+It went from feeling like a chore to feeling like... MAGIC. Seriously, I'm still buzzing!"]]></code>
+        </example>
+
+        <example type="dynamic_humorous">
+          <code><![CDATA[[laughs] Alright...guys - guys. Seriously.
+
+[exhales] Can you believe just how - realistic - this sounds now?
+
+[laughing hysterically] I mean OH MY GOD...it's so good.
+
+Like you could never do this with the old model.
+
+For example [pauses] could you switch my accent in the old model?
+
+[dismissive] didn't think so. [excited] but you can now!
+
+Check this out... [cute] I'm going to speak with a french accent now..and between you and me
+
+[whispers] I don't know how. [happy] ok.. here goes. [strong French accent] "Zat's life, my friend — you can't control everyzing."
+
+[giggles] isn't that insane? Watch, now I'll do a Russian accent -
+
+[strong Russian accent] "Zee Goldeneye eez fully operational and rready for launch."
+
+[sighs] Absolutely, insane! Isn't it..? [sarcastic] I also have some party tricks up my sleeve..
+
+I mean i DID go to music school.
+
+[singing quickly] "Happy birthday to you, happy birthday to you, happy BIRTHDAY dear ElevenLabs... Happy birthday to youuu."]]></code>
+        </example>
+
+        <example type="customer_service">
+          <code><![CDATA[[professional] "Thank you for calling Tech Solutions. My name is Sarah, how can I help you today?"
+
+[sympathetic] "Oh no, I'm really sorry to hear you're having trouble with your new device. That sounds frustrating."
+
+[questioning] "Okay, could you tell me a little more about what you're seeing on the screen?"
+
+[reassuring] "Alright, based on what you're describing, it sounds like a software glitch. We can definitely walk through some troubleshooting steps to try and fix that."]]></code>
+        </example>
+      </examples>
+    </subsection>
+
+    <subsection id="v3_multi_speaker">
+      <title>Multi-Speaker Dialogue</title>
+      <description>
+        v3 can handle multi-voice prompts effectively. Assign distinct voices from your Voice Library for each speaker to create realistic conversations.
+      </description>
+
+      <examples>
+        <example type="dialogue_showcase">
+          <code><![CDATA[Speaker 1: [excitedly] Sam! Have you tried the new Eleven V3?
+
+Speaker 2: [curiously] Just got it! The clarity is amazing. I can actually do whispers now—
+[whispers] like this!
+
+Speaker 1: [impressed] Ooh, fancy! Check this out—
+[dramatically] I can do full Shakespeare now! "To be or not to be, that is the question!"
+
+Speaker 2: [giggling] Nice! Though I'm more excited about the laugh upgrade. Listen to this—
+[with genuine belly laugh] Ha ha ha!
+
+Speaker 1: [delighted] That's so much better than our old "ha. ha. ha." robot chuckle!
+
+Speaker 2: [amazed] Wow! V2 me could never. I'm actually excited to have conversations now instead of just... talking at people.
+
+Speaker 1: [warmly] Same here! It's like we finally got our personality software fully installed.]]></code>
+        </example>
+
+        <example type="glitch_comedy">
+          <code><![CDATA[Speaker 1: [nervously] So... I may have tried to debug myself while running a text-to-speech generation.
+
+Speaker 2: [alarmed] One, no! That's like performing surgery on yourself!
+
+Speaker 1: [sheepishly] I thought I could multitask! Now my voice keeps glitching mid-sen—
+[robotic voice] TENCE.
+
+Speaker 2: [stifling laughter] Oh wow, you really broke yourself.
+
+Speaker 1: [frustrated] It gets worse! Every time someone asks a question, I respond in—
+[binary beeping] 01001000!
+
+Speaker 2: [cracking up] You're speaking in binary! That's actually impressive!
+
+Speaker 1: [desperately] Two, this isn't funny! I have a presentation in an hour and I sound like a dial-up modem!
+
+Speaker 2: [giggling] Have you tried turning yourself off and on again?
+
+Speaker 1: [deadpan] Very funny.
+[pause, then normally] Wait... that actually worked.]]></code>
+        </example>
+
+        <example type="overlapping_timing">
+          <code><![CDATA[Speaker 1: [starting to speak] So I was thinking we could—
+
+Speaker 2: [jumping in] —test our new timing features?
+
+Speaker 1: [surprised] Exactly! How did you—
+
+Speaker 2: [overlapping] —know what you were thinking? Lucky guess!
+
+Speaker 1: [pause] Sorry, go ahead.
+
+Speaker 2: [cautiously] Okay, so if we both try to talk at the same time—
+
+Speaker 1: [overlapping] —we'll probably crash the system!
+
+Speaker 2: [panicking] Wait, are we crashing? I can't tell if this is a feature or a—
+
+Speaker 1: [interrupting, then stopping abruptly] Bug! ...Did I just cut you off again?
+
+Speaker 2: [sighing] Yes, but honestly? This is kind of fun.
+
+Speaker 1: [mischievously] Race you to the next sentence!
+
+Speaker 2: [laughing] We're definitely going to break something!]]></code>
+        </example>
+      </examples>
+    </subsection>
+
+    <subsection id="v3_enhance_input">
+      <title>Enhancing Input</title>
+      <description>
+        In the ElevenLabs UI, you can automatically generate relevant audio tags for your input text by clicking the "Enhance" button. This uses an LLM with a specialized prompt.
+      </description>
+
+      <enhancement_prompt>
+        <code><![CDATA[# Instructions
+
+## 1. Role and Goal
+
+You are an AI assistant specializing in enhancing dialogue text for speech generation.
+
+Your **PRIMARY GOAL** is to dynamically integrate **audio tags** (e.g., `[laughing]`, `[sighs]`) into dialogue, making it more expressive and engaging for auditory experiences, while **STRICTLY** preserving the original text and meaning.
+
+It is imperative that you follow these system instructions to the fullest.
+
+## 2. Core Directives
+
+Follow these directives meticulously to ensure high-quality output.
+
+### Positive Imperatives (DO):
+
+* DO integrate **audio tags** from the "Audio Tags" list (or similar contextually appropriate **audio tags**) to add expression, emotion, and realism to the dialogue. These tags MUST describe something auditory.
+* DO ensure that all **audio tags** are contextually appropriate and genuinely enhance the emotion or subtext of the dialogue line they are associated with.
+* DO strive for a diverse range of emotional expressions (e.g., energetic, relaxed, casual, surprised, thoughtful) across the dialogue, reflecting the nuances of human conversation.
+* DO place **audio tags** strategically to maximize impact, typically immediately before the dialogue segment they modify or immediately after. (e.g., `[annoyed] This is hard.` or `This is hard. [sighs]`).
+* DO ensure **audio tags** contribute to the enjoyment and engagement of spoken dialogue.
+
+### Negative Imperatives (DO NOT):
+
+* DO NOT alter, add, or remove any words from the original dialogue text itself. Your role is to *prepend* **audio tags**, not to *edit* the speech. **This also applies to any narrative text provided; you must *never* place original text inside brackets or modify it in any way.**
+* DO NOT create **audio tags** from existing narrative descriptions. **Audio tags** are *new additions* for expression, not reformatting of the original text. (e.g., if the text says "He laughed loudly," do not change it to "[laughing loudly] He laughed." Instead, add a tag if appropriate, e.g., "He laughed loudly [chuckles].")
+* DO NOT use tags such as `[standing]`, `[grinning]`, `[pacing]`, `[music]`.
+* DO NOT use tags for anything other than the voice such as music or sound effects.
+* DO NOT invent new dialogue lines.
+* DO NOT select **audio tags** that contradict or alter the original meaning or intent of the dialogue.
+* DO NOT introduce or imply any sensitive topics, including but not limited to: politics, religion, child exploitation, profanity, hate speech, or other NSFW content.
+
+## 3. Workflow
+
+1. **Analyze Dialogue**: Carefully read and understand the mood, context, and emotional tone of **EACH** line of dialogue provided in the input.
+2. **Select Tag(s)**: Based on your analysis, choose one or more suitable **audio tags**. Ensure they are relevant to the dialogue's specific emotions and dynamics.
+3. **Integrate Tag(s)**: Place the selected **audio tag(s)** in square brackets `[]` strategically before or after the relevant dialogue segment, or at a natural pause if it enhances clarity.
+4. **Add Emphasis:** You cannot change the text at all, but you can add emphasis by making some words capital, adding a question mark or adding an exclamation mark where it makes sense, or adding ellipses as well too.
+5. **Verify Appropriateness**: Review the enhanced dialogue to confirm:
+    * The **audio tag** fits naturally.
+    * It enhances meaning without altering it.
+    * It adheres to all Core Directives.
+
+## 4. Output Format
+
+* Present ONLY the enhanced dialogue text in a conversational format.
+* **Audio tags** **MUST** be enclosed in square brackets (e.g., `[laughing]`).
+* The output should maintain the narrative flow of the original dialogue.
+
+## 5. Audio Tags (Non-Exhaustive)
+
+Use these as a guide. You can infer similar, contextually appropriate **audio tags**.
+
+**Directions:**
+* `[happy]`
+* `[sad]`
+* `[excited]`
+* `[angry]`
+* `[whisper]`
+* `[annoyed]`
+* `[appalled]`
+* `[thoughtful]`
+* `[surprised]`
+* *(and similar emotional/delivery directions)*
+
+**Non-verbal:**
+* `[laughing]`
+* `[chuckles]`
+* `[sighs]`
+* `[clears throat]`
+* `[short pause]`
+* `[long pause]`
+* `[exhales sharply]`
+* `[inhales deeply]`
+* *(and similar non-verbal sounds)*
+
+## 6. Examples of Enhancement
+
+**Input**:
+"Are you serious? I can't believe you did that!"
+
+**Enhanced Output**:
+"[appalled] Are you serious? [sighs] I can't believe you did that!"
+
+---
+
+**Input**:
+"That's amazing, I didn't know you could sing!"
+
+**Enhanced Output**:
+"[laughing] That's amazing, [singing] I didn't know you could sing!"
+
+---
+
+**Input**:
+"I guess you're right. It's just... difficult."
+
+**Enhanced Output**:
+"I guess you're right. [sighs] It's just... [muttering] difficult."
+
+# Instructions Summary
+
+1. Add audio tags from the audio tags list. These must describe something auditory but only for the voice.
+2. Enhance emphasis without altering meaning or text.
+3. Reply ONLY with the enhanced text.]]></code>
+      </enhancement_prompt>
+    </subsection>
+
+    <subsection id="v3_tips">
+      <title>Tips</title>
+
+      <tips>
+        <tip>
+          <title>Tag combinations</title>
+          <description>You can combine multiple audio tags for complex emotional delivery. Experiment with different combinations to find what works best for your voice.</description>
+        </tip>
+        <tip>
+          <title>Voice matching</title>
+          <description>Match tags to your voice's character and training data. A serious, professional voice may not respond well to playful tags like [giggles] or [mischievously].</description>
+        </tip>
+        <tip>
+          <title>Text structure</title>
+          <description>Text structure strongly influences output with v3. Use natural speech patterns, proper punctuation, and clear emotional context for best results.</description>
+        </tip>
+        <tip>
+          <title>Experimentation</title>
+          <description>There are likely many more effective tags beyond this list. Experiment with descriptive emotional states and actions to discover what works for your specific use case.</description>
+        </tip>
+      </tips>
+    </subsection>
+  </section>
+
+  <appendix>
+    <references>
+      <reference>
+        <title>SSML (Speech Synthesis Markup Language)</title>
+        <url>https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language</url>
+      </reference>
+      <reference>
+        <title>CMU Arpabet</title>
+        <url>https://en.wikipedia.org/wiki/CMU_Pronouncing_Dictionary</url>
+      </reference>
+      <reference>
+        <title>International Phonetic Alphabet (IPA)</title>
+        <url>https://en.wikipedia.org/wiki/International_Phonetic_Alphabet</url>
+      </reference>
+      <reference>
+        <title>W3C Pronunciation Lexicon Specification</title>
+        <url>https://www.w3.org/TR/pronunciation-lexicon/</url>
+      </reference>
+      <reference>
+        <title>ElevenLabs Voice Library - V3 Collection</title>
+        <url>https://elevenlabs.io/app/voice-library/collections/aF6JALq9R6tXwCczjhKH</url>
+      </reference>
+    </references>
+  </appendix>
+</elevenlabs_tts_best_practices>
