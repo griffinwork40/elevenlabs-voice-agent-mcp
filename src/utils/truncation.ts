@@ -98,23 +98,90 @@ export function truncateMiddle(content: string, maxLength: number): string {
 }
 
 /**
+ * Recursively truncates large string values within an object.
+ * @description Walks through an object/array structure and truncates any string
+ * values that exceed the specified maximum length. This preserves JSON structure
+ * validity while reducing overall size.
+ *
+ * @param {unknown} obj - Object to process
+ * @param {number} [maxStringLength=5000] - Maximum length for individual strings
+ * @returns {unknown} Object with truncated string values
+ */
+function truncateLargeStringsInObject(obj: unknown, maxStringLength: number = 5000): unknown {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+
+  if (typeof obj === 'string') {
+    if (obj.length > maxStringLength) {
+      return obj.substring(0, maxStringLength) + `\n\n[TRUNCATED: String exceeded ${maxStringLength} characters. Full content available in ElevenLabs dashboard.]`;
+    }
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(item => truncateLargeStringsInObject(item, maxStringLength));
+  }
+
+  if (typeof obj === 'object') {
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      result[key] = truncateLargeStringsInObject(value, maxStringLength);
+    }
+    return result;
+  }
+
+  return obj;
+}
+
+/**
  * Formats a large JSON object with optional truncation.
- * @description Converts any object to pretty-printed JSON, automatically
- * truncating if the result exceeds CHARACTER_LIMIT.
+ * @description Converts any object to pretty-printed JSON. If the result exceeds
+ * CHARACTER_LIMIT, progressively truncates large string values within the object
+ * to preserve valid JSON structure rather than cutting off the JSON string mid-way.
  *
  * @param {unknown} obj - Object to format as JSON
  * @param {number} [indent=2] - Number of spaces for indentation
- * @returns {string} JSON string, potentially truncated with guidance
+ * @returns {string} JSON string, potentially with truncated string values
  *
  * @example
  * const json = formatJSON({ agents: [...] });
- * // Returns pretty-printed JSON, truncated if over 25000 chars
+ * // Returns pretty-printed JSON, with large strings truncated if over limit
  */
 export function formatJSON(obj: unknown, indent: number = 2): string {
-  const json = JSON.stringify(obj, null, indent);
+  let json = JSON.stringify(obj, null, indent);
 
+  if (json.length <= CHARACTER_LIMIT) {
+    return json;
+  }
+
+  // Progressively reduce string length limits until we fit within CHARACTER_LIMIT
+  const truncationLimits = [10000, 5000, 2000, 1000];
+  for (const limit of truncationLimits) {
+    const truncatedObj = truncateLargeStringsInObject(obj, limit);
+    json = JSON.stringify(truncatedObj, null, indent);
+    if (json.length <= CHARACTER_LIMIT) {
+      return json;
+    }
+  }
+
+  // Final attempt with aggressive truncation
+  const truncatedObj = truncateLargeStringsInObject(obj, 500);
+  json = JSON.stringify(truncatedObj, null, indent);
+
+  // If still too large, add metadata and do final truncation
   if (json.length > CHARACTER_LIMIT) {
-    return truncateIfNeeded(json, "Response is very large. Consider using filters or requesting specific fields");
+    const metadata: Record<string, unknown> = {
+      _truncation_notice: "Response too large. Content has been significantly truncated.",
+      _original_size: JSON.stringify(obj).length
+    };
+    if (typeof obj === 'object' && obj !== null) {
+      const objRecord = obj as Record<string, unknown>;
+      if (objRecord.agent_id) metadata.agent_id = objRecord.agent_id;
+      if (objRecord.name) metadata.name = objRecord.name;
+    }
+    const finalObj = { ...metadata, ...(typeof truncatedObj === 'object' ? truncatedObj : { data: truncatedObj }) };
+    return JSON.stringify(finalObj, null, indent).substring(0, CHARACTER_LIMIT);
   }
 
   return json;
