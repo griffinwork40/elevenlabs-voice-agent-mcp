@@ -107,7 +107,7 @@ export function truncateMiddle(content: string, maxLength: number): string {
  * @param {number} [maxStringLength=5000] - Maximum length for individual strings
  * @returns {unknown} Object with truncated string values
  */
-function truncateLargeStringsInObject(obj: unknown, maxStringLength: number = 5000): unknown {
+export function truncateLargeStringsInObject(obj: unknown, maxStringLength: number = 5000): unknown {
   if (obj === null || obj === undefined) {
     return obj;
   }
@@ -150,6 +150,7 @@ function truncateLargeStringsInObject(obj: unknown, maxStringLength: number = 50
  */
 export function formatJSON(obj: unknown, indent: number = 2): string {
   let json = JSON.stringify(obj, null, indent);
+  const originalSize = json.length; // Cache the original size for performance
 
   if (json.length <= CHARACTER_LIMIT) {
     return json;
@@ -173,7 +174,7 @@ export function formatJSON(obj: unknown, indent: number = 2): string {
   if (json.length > CHARACTER_LIMIT) {
     const metadata: Record<string, unknown> = {
       _truncation_notice: "Response too large. Content has been significantly truncated.",
-      _original_size: JSON.stringify(obj).length
+      _original_size: originalSize // Use cached value instead of re-stringifying
     };
     if (typeof obj === 'object' && obj !== null) {
       const objRecord = obj as Record<string, unknown>;

@@ -9,7 +9,8 @@ import {
   truncateIfNeeded,
   truncateArray,
   truncateMiddle,
-  formatJSON
+  formatJSON,
+  truncateLargeStringsInObject
 } from "../../utils/truncation.js";
 import { CHARACTER_LIMIT } from "../../constants.js";
 
@@ -200,6 +201,138 @@ describe("Truncation Utilities", () => {
     });
   });
 
+  describe("truncateLargeStringsInObject", () => {
+    it("should truncate strings exceeding maxStringLength", () => {
+      const obj = { longText: "x".repeat(6000) };
+      const result = truncateLargeStringsInObject(obj, 5000) as { longText: string };
+
+      expect(result.longText).toContain("[TRUNCATED: String exceeded 5000 characters");
+      expect(result.longText).toContain("Full content available in ElevenLabs dashboard");
+      expect(result.longText.length).toBeLessThan(6000);
+    });
+
+    it("should preserve short strings unchanged", () => {
+      const obj = { shortText: "hello" };
+      const result = truncateLargeStringsInObject(obj, 5000) as { shortText: string };
+
+      expect(result.shortText).toBe("hello");
+    });
+
+    it("should handle nested objects", () => {
+      const obj = { nested: { deep: { text: "x".repeat(6000) } } };
+      const result = truncateLargeStringsInObject(obj, 5000) as { nested: { deep: { text: string } } };
+
+      expect(result.nested.deep.text).toContain("[TRUNCATED:");
+      expect(result.nested.deep.text).toContain("Full content available in ElevenLabs dashboard");
+    });
+
+    it("should handle arrays", () => {
+      const obj = { items: ["x".repeat(6000), "short", "y".repeat(6000)] };
+      const result = truncateLargeStringsInObject(obj, 5000) as { items: string[] };
+
+      expect(result.items[0]).toContain("[TRUNCATED:");
+      expect(result.items[1]).toBe("short");
+      expect(result.items[2]).toContain("[TRUNCATED:");
+    });
+
+    it("should handle null and undefined", () => {
+      const obj = { a: null, b: undefined, c: "text" };
+      const result = truncateLargeStringsInObject(obj, 5000) as { a: null; b: undefined; c: string };
+
+      expect(result.a).toBeNull();
+      expect(result.b).toBeUndefined();
+      expect(result.c).toBe("text");
+    });
+
+    it("should not modify original object", () => {
+      const original = { text: "x".repeat(6000) };
+      const copy = JSON.parse(JSON.stringify(original));
+      truncateLargeStringsInObject(original, 5000);
+
+      expect(original).toEqual(copy); // Original unchanged
+    });
+
+    it("should handle mixed data types", () => {
+      const obj = {
+        str: "x".repeat(6000),
+        num: 42,
+        bool: true,
+        arr: [1, 2, 3],
+        nested: { value: "y".repeat(6000) }
+      };
+      const result = truncateLargeStringsInObject(obj, 5000) as {
+        str: string;
+        num: number;
+        bool: boolean;
+        arr: number[];
+        nested: { value: string };
+      };
+
+      expect(result.str).toContain("[TRUNCATED:");
+      expect(result.num).toBe(42);
+      expect(result.bool).toBe(true);
+      expect(result.arr).toEqual([1, 2, 3]);
+      expect(result.nested.value).toContain("[TRUNCATED:");
+    });
+
+    it("should handle deeply nested structures", () => {
+      const obj = {
+        level1: {
+          level2: {
+            level3: {
+              level4: {
+                text: "x".repeat(6000)
+              }
+            }
+          }
+        }
+      };
+      const result = truncateLargeStringsInObject(obj, 5000) as {
+        level1: { level2: { level3: { level4: { text: string } } } };
+      };
+
+      expect(result.level1.level2.level3.level4.text).toContain("[TRUNCATED:");
+    });
+
+    it("should respect custom maxStringLength", () => {
+      const obj = { text: "x".repeat(200) };
+
+      // With limit 100, should truncate
+      const result1 = truncateLargeStringsInObject(obj, 100) as { text: string };
+      expect(result1.text).toContain("[TRUNCATED: String exceeded 100 characters");
+
+      // With limit 300, should not truncate
+      const result2 = truncateLargeStringsInObject(obj, 300) as { text: string };
+      expect(result2.text).not.toContain("[TRUNCATED:");
+      expect(result2.text).toBe("x".repeat(200));
+    });
+
+    it("should handle arrays of objects", () => {
+      const obj = {
+        users: [
+          { name: "Alice", bio: "x".repeat(6000) },
+          { name: "Bob", bio: "short bio" }
+        ]
+      };
+      const result = truncateLargeStringsInObject(obj, 5000) as {
+        users: Array<{ name: string; bio: string }>;
+      };
+
+      expect(result.users[0].name).toBe("Alice");
+      expect(result.users[0].bio).toContain("[TRUNCATED:");
+      expect(result.users[1].name).toBe("Bob");
+      expect(result.users[1].bio).toBe("short bio");
+    });
+
+    it("should handle empty objects and arrays", () => {
+      const obj = { empty: {}, emptyArr: [] };
+      const result = truncateLargeStringsInObject(obj, 5000) as { empty: object; emptyArr: unknown[] };
+
+      expect(result.empty).toEqual({});
+      expect(result.emptyArr).toEqual([]);
+    });
+  });
+
   describe("formatJSON", () => {
     it("should format object with default indentation", () => {
       const obj = { key: "value", nested: { a: 1 } };
@@ -217,7 +350,7 @@ describe("Truncation Utilities", () => {
       expect(result).toBe(JSON.stringify(obj, null, 4));
     });
 
-    it("should truncate large JSON objects", () => {
+    it("should truncate large JSON objects while preserving valid JSON structure", () => {
       // Create object larger than CHARACTER_LIMIT
       const largeObj = {
         items: Array(1000).fill({ id: "x".repeat(100), data: "y".repeat(100) })
@@ -225,8 +358,15 @@ describe("Truncation Utilities", () => {
 
       const result = formatJSON(largeObj);
 
-      expect(result).toContain("[TRUNCATED:");
-      expect(result).toContain(`${CHARACTER_LIMIT} characters`);
+      // 1. Must be valid, parseable JSON
+      expect(() => JSON.parse(result)).not.toThrow();
+
+      // 2. Must not exceed CHARACTER_LIMIT
+      expect(result.length).toBeLessThanOrEqual(CHARACTER_LIMIT);
+
+      // 3. Should contain new truncation message format (inside string values)
+      expect(result).toContain("[TRUNCATED: String exceeded");
+      expect(result).toContain("Full content available in ElevenLabs dashboard");
     });
 
     it("should not truncate small objects", () => {
