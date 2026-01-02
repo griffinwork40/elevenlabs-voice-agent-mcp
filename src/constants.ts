@@ -27,7 +27,7 @@ export const API_BASE_URL = "https://api.elevenlabs.io/v1";
  * with pagination guidance to prevent overwhelming clients.
  * @constant {number}
  */
-export const CHARACTER_LIMIT = 25000;
+export const CHARACTER_LIMIT = 100000;
 
 /**
  * Default number of items returned in paginated list responses.
