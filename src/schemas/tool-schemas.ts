@@ -107,7 +107,7 @@ export const DeleteToolSchema = z.object({
 const KnowledgeBaseDocumentSchema = z.object({
   type: z.enum(["text", "url"], {
     errorMap: () => ({ message: "Document type must be 'text' or 'url'" })
-  }).describe("Type of document to add"),
+  }).describe("Type of document to add: 'text' for raw text, 'url' for web content"),
 
   content: z.string()
     .min(1, "Document content is required")

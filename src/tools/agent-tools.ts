@@ -17,6 +17,10 @@ import {
   DeleteAgentSchema,
   ListAgentsSchema
 } from "../schemas/agent-schemas.js";
+import {
+  DEFAULT_ASR_PROVIDER,
+  DEFAULT_ASR_AUDIO_FORMAT
+} from "../constants.js";
 
 /**
  * Creates a new ElevenLabs Voice Agent
@@ -51,6 +55,11 @@ Args:
   - turn_eagerness ('patient' | 'normal' | 'eager'): How quickly agent responds (default: normal)
   - turn_timeout (number): Seconds to wait for user response 1-30 (default: 10)
   - silence_end_call_timeout (number): Seconds of silence before ending call 1-600 (default: 15)
+  - asr_provider ('elevenlabs' | 'scribe_realtime'): ASR provider (default: elevenlabs)
+  - asr_audio_format (string): Audio format for input (default: pcm_16000)
+    Options: pcm_8000, pcm_16000, pcm_22050, pcm_24000, pcm_44100, pcm_48000, ulaw_8000
+  - asr_quality ('low' | 'medium' | 'high'): Speech recognition quality level
+  - asr_keywords (string[]): Domain-specific terms to boost recognition
   - widget_color (string): Widget theme color in hex format (e.g., "#FF5733")
   - widget_avatar_url (string): Widget avatar image URL
   - response_format ('markdown' | 'json'): Output format
@@ -104,10 +113,12 @@ Error Handling:
           ...(parsed.similarity_boost !== undefined && { similarity_boost: parsed.similarity_boost }),
           ...(parsed.speed !== undefined && { speed: parsed.speed })
         },
-        // ASR (Automatic Speech Recognition) configuration - required by ElevenLabs API
+        // ASR (Automatic Speech Recognition) configuration
         asr: {
-          provider: "elevenlabs",
-          user_input_audio_format: "pcm_16000"
+          provider: parsed.asr_provider ?? DEFAULT_ASR_PROVIDER,
+          user_input_audio_format: parsed.asr_audio_format ?? DEFAULT_ASR_AUDIO_FORMAT,
+          ...(parsed.asr_quality !== undefined && { quality: parsed.asr_quality }),
+          ...(parsed.asr_keywords !== undefined && parsed.asr_keywords.length > 0 && { keywords: parsed.asr_keywords })
         },
         // Turn-taking configuration - required by ElevenLabs API
         turn: {
@@ -214,6 +225,10 @@ Args:
   - turn_eagerness ('patient' | 'normal' | 'eager'): How quickly agent responds
   - turn_timeout (number): Seconds to wait for user response (1-30)
   - silence_end_call_timeout (number): Seconds of silence before ending call (1-600)
+  - asr_provider ('elevenlabs' | 'scribe_realtime'): Updated ASR provider
+  - asr_audio_format (string): Updated audio format for input
+  - asr_quality ('low' | 'medium' | 'high'): Updated ASR quality level
+  - asr_keywords (string[]): Updated keywords for domain-specific recognition
   - widget_color (string): Updated widget color
   - widget_avatar_url (string): Updated widget avatar URL
   - response_format ('markdown' | 'json'): Output format
@@ -227,6 +242,8 @@ Examples:
   - Use when: "Switch the agent to use Claude instead of GPT"
   - Use when: "Make the agent respond faster with turn_eagerness: 'eager'"
   - Use when: "Slow down the speech rate to 0.8"
+  - Use when: "Switch to high quality ASR for better accuracy"
+  - Use when: "Add product name keywords for better recognition"
   - Don't use when: You want to create a new agent (use elevenlabs_create_agent)
 
 Error Handling:
@@ -323,6 +340,25 @@ Error Handling:
         ...(parsed.turn_eagerness !== undefined && { turn_eagerness: parsed.turn_eagerness }),
         ...(parsed.turn_timeout !== undefined && { turn_timeout: parsed.turn_timeout }),
         ...(parsed.silence_end_call_timeout !== undefined && { silence_end_call_timeout: parsed.silence_end_call_timeout })
+      };
+      hasConversationConfigChanges = true;
+    }
+
+    // ASR configuration updates
+    if (parsed.asr_provider !== undefined || parsed.asr_audio_format !== undefined ||
+        parsed.asr_quality !== undefined || parsed.asr_keywords !== undefined) {
+      const currentAsr = currentAgent.conversation_config.asr;
+      conversationConfigUpdates.asr = {
+        // Preserve current values with defaults
+        provider: currentAsr?.provider ?? DEFAULT_ASR_PROVIDER,
+        user_input_audio_format: currentAsr?.user_input_audio_format ?? DEFAULT_ASR_AUDIO_FORMAT,
+        ...(currentAsr?.quality && { quality: currentAsr.quality }),
+        ...(currentAsr?.keywords && { keywords: currentAsr.keywords }),
+        // Apply user updates (these override current values)
+        ...(parsed.asr_provider !== undefined && { provider: parsed.asr_provider }),
+        ...(parsed.asr_audio_format !== undefined && { user_input_audio_format: parsed.asr_audio_format }),
+        ...(parsed.asr_quality !== undefined && { quality: parsed.asr_quality }),
+        ...(parsed.asr_keywords !== undefined && { keywords: parsed.asr_keywords })
       };
       hasConversationConfigChanges = true;
     }
