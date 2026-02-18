@@ -8,7 +8,8 @@
 
 import { getRequest, postRequest, patchRequest, deleteRequest } from "../services/elevenlabs-api.js";
 import { formatResponse } from "../services/formatters.js";
-import { PhoneNumber, ImportPhoneNumberResponse } from "../types.js";
+import { createTextResponse } from "../utils/response.js";
+import { PhoneNumber, ImportPhoneNumberResponse, MCPToolDefinition } from "../types.js";
 import {
   ListPhoneNumbersSchema,
   GetPhoneNumberSchema,
@@ -20,7 +21,7 @@ import {
 /**
  * Lists all phone numbers connected to the workspace
  */
-export const elevenlabs_list_phone_numbers = {
+export const elevenlabs_list_phone_numbers: MCPToolDefinition<typeof ListPhoneNumbersSchema> = {
   name: "elevenlabs_list_phone_numbers",
   description: `List all phone numbers connected to your ElevenLabs workspace.
 
@@ -63,21 +64,14 @@ Error Handling:
 
     const response = await getRequest<PhoneNumber[]>("/convai/phone-numbers");
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(response, parsed.response_format, "phone_number_list")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(response, parsed.response_format, "phone_number_list"));
   }
 };
 
 /**
  * Gets details about a specific phone number
  */
-export const elevenlabs_get_phone_number = {
+export const elevenlabs_get_phone_number: MCPToolDefinition<typeof GetPhoneNumberSchema> = {
   name: "elevenlabs_get_phone_number",
   description: `Get detailed information about a specific phone number.
 
@@ -116,21 +110,14 @@ Error Handling:
       `/convai/phone-numbers/${parsed.phone_number_id}`
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(response, parsed.response_format, "phone_number")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(response, parsed.response_format, "phone_number"));
   }
 };
 
 /**
  * Imports a Twilio phone number
  */
-export const elevenlabs_import_phone_number = {
+export const elevenlabs_import_phone_number: MCPToolDefinition<typeof ImportPhoneNumberSchema> = {
   name: "elevenlabs_import_phone_number",
   description: `Import a Twilio phone number to use with ElevenLabs Voice Agents.
 
@@ -204,21 +191,14 @@ Error Handling:
       requestData
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(response, parsed.response_format, "phone_number_import")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(response, parsed.response_format, "phone_number_import"));
   }
 };
 
 /**
  * Updates a phone number (primarily for agent assignment)
  */
-export const elevenlabs_update_phone_number = {
+export const elevenlabs_update_phone_number: MCPToolDefinition<typeof UpdatePhoneNumberSchema> = {
   name: "elevenlabs_update_phone_number",
   description: `Update a phone number's configuration, primarily to assign or unassign agents.
 
@@ -282,21 +262,14 @@ Error Handling:
       updateData
     );
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: formatResponse(response, parsed.response_format, "phone_number")
-        }
-      ]
-    };
+    return createTextResponse(formatResponse(response, parsed.response_format, "phone_number"));
   }
 };
 
 /**
  * Deletes a phone number
  */
-export const elevenlabs_delete_phone_number = {
+export const elevenlabs_delete_phone_number: MCPToolDefinition<typeof DeletePhoneNumberSchema> = {
   name: "elevenlabs_delete_phone_number",
   description: `Delete a phone number from your ElevenLabs workspace.
 
@@ -335,13 +308,6 @@ Error Handling:
 
     await deleteRequest(`/convai/phone-numbers/${parsed.phone_number_id}`);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Successfully deleted phone number: ${parsed.phone_number_id}`
-        }
-      ]
-    };
+    return createTextResponse(`Successfully deleted phone number: ${parsed.phone_number_id}`);
   }
 };
